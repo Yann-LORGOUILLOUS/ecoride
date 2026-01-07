@@ -1,0 +1,28 @@
+[{
+  "_id": {
+    "$oid": "695ed580a76a8fd28abc44a8"
+  },
+  "type": "trip_incident",
+  "status": "resolved",
+  "reporter_user_id": 4,
+  "trip_id": 1,
+  "comment": "Le conducteur est arrivé en retard.",
+  "created_at": {
+    "$date": "2026-02-10T14:30:00.000Z"
+  },
+  "resolved_at": "2026-02-11T09:30:00Z",
+  "resolved_by_employee_id": "2"
+},
+{
+  "_id": {
+    "$oid": "695ed5c7a76a8fd28abc44aa"
+  },
+  "type": "app_issue",
+  "status": "open",
+  "reporter_user_id": 4,
+  "page": "trip_list",
+  "comment": "La liste des trajets met beaucoup de temps à charger.",
+  "created_at": {
+    "$date": "2026-02-10T15:10:00.000Z"
+  }
+}]

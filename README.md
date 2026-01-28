@@ -15,6 +15,24 @@ Le projet est développé progressivement, en suivant une démarche structurée.
 
 ---
 
+## Rôles et permissions
+
+L’application EcoRide repose sur une gestion de rôles permettant de séparer clairement les responsabilités et les accès.
+
+Trois types de comptes sont prévus :
+
+- **Utilisateur**  
+  Peut consulter les trajets, réserver des places, proposer des trajets, gérer ses véhicules, consulter et utiliser ses crédits, déposer des avis et signaler un trajet ou un problème.
+
+- **Employé / Modérateur**  
+  Est chargé de la modération de la plateforme. Il valide les trajets proposés, les avis déposés par les utilisateurs et traite les signalements liés aux trajets ou à l’utilisation de l’application.
+
+- **Administrateur**  
+  Dispose d’un accès global à la plateforme. Il peut gérer les comptes utilisateurs (création, suspension, réactivation), traiter les signalements techniques et consulter les statistiques globales de l’application.
+
+
+---
+
 ## Phase préparatoire
 
 Avant de commencer le développement, une phase préparatoire a été réalisée afin de mettre en place un environnement de travail fonctionnel et fiable.
@@ -74,6 +92,22 @@ Ces données, de type événementiel, sont stockées dans une collection dédié
 
 ---
 
+## Système de crédits
+
+EcoRide intègre un système de crédits servant de monnaie interne à la plateforme.  
+Ces crédits n’ont aucune valeur monétaire et sont uniquement utilisés pour faciliter les échanges entre utilisateurs.
+
+Le principe est le suivant :
+- chaque utilisateur reçoit un capital de crédits à l’inscription,
+- les crédits sont utilisés pour réserver des trajets en tant que passager,
+- les crédits sont gagnés en proposant des trajets en tant que conducteur,
+- certaines actions positives (notation, bon comportement) peuvent générer des crédits supplémentaires.
+
+Le calcul précis des crédits liés aux trajets (distance, conditions particulières) n’est volontairement pas automatisé.  
+Les trajets doivent être validés manuellement par un modérateur, afin de garantir l’équité, la simplicité du système et d’éviter une complexité technique excessive dans le cadre du projet. Cet aspect pourra évoluer avec la plateforme en fonction du nombre d'utilisateurs.
+
+---
+
 ## Design & UX
 
 Avant de commencer le développement en PHP, une phase de design a été menée afin de cadrer le projet.
@@ -90,11 +124,22 @@ Elle comprend :
 - un bouton de référence pour les actions principales,
 - un logo typographique simple.
 
-### Outils utilisés
-- Figma (charte graphique)
-- Trello (organisation et suivi des tâches)
+### Conception des interfaces (Figma)
 
-Les maquettes fonctionnelles (wireframes) seront réalisées avant le début du développement.
+L’ensemble des interfaces de l’application a été conçu sur Figma en amont du développement.
+
+La conception s’est appuyée sur :
+- l’utilisation de composants réutilisables,
+- la mise en place d’auto-layouts pour garantir la cohérence et la maintenabilité,
+- une approche responsive permettant l’adaptation des interfaces aux formats desktop et mobile sans duplication inutile des écrans.
+
+Les wireframes couvrent l’intégralité des parcours utilisateurs, modérateurs et administrateurs, afin d’anticiper les besoins fonctionnels et de faciliter le passage au développement.
+
+---
+
+### Outils utilisés
+- **Figma** : conception de la charte graphique et des wireframes
+- **Trello** : organisation et suivi des étapes du projet
 
 ---
 
@@ -110,5 +155,7 @@ Les maquettes fonctionnelles (wireframes) seront réalisées avant le début du 
 ---
 
 ## Avancement du projet
-Le projet est actuellement en phase de **design et préparation fonctionnelle**.  
-Le développement PHP débutera après validation des maquettes et des parcours utilisateurs.
+
+Le projet est actuellement en phase de **finalisation du design et de préparation au développement**.  
+L’ensemble des wireframes (pages publiques, tableaux de bord utilisateur, modérateur et administrateur) a été conçu sur Figma.  
+Les prochaines étapes consistent à entamer le développement de l’application à partir des maquettes validées.

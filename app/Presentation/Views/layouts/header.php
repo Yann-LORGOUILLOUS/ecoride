@@ -1,47 +1,48 @@
 <?php declare(strict_types=1); ?>
+
 <!doctype html>
 <html lang="fr">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <title><?= $pageTitle ?? 'EcoRide' ?></title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/global.css">
-  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/header.css">
-  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/footer.css">
-  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/pages/accueil.css">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme.css">
 </head>
 
-<body>
+<body class="bg-body-tertiary" style="font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
 
-<header class="site-header">
-  <div class="header-inner container">
-    <a class="brand" href="<?= BASE_URL ?>/">
-      <img
-        src="<?= BASE_URL ?>/assets/images/logo_EcoRide.png"
-        alt="EcoRide"
-        class="brand-logo"
-      >
-    </a>
+<header class="bg-ecoride-background border-bottom border-black border-opacity-10">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-xxl px-3">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="<?= BASE_URL ?>/">
+        <img src="<?= BASE_URL ?>/assets/images/logo_EcoRide.png" alt="EcoRide" height="48">
+      </a>
 
-    <nav class="nav-links" aria-label="Navigation principale">
-      <a class="nav-btn" href="<?= BASE_URL ?>/">Accueil</a>
-      <a class="nav-btn" href="<?= BASE_URL ?>/trajets">Covoiturages</a>
-      <a class="nav-btn" href="<?= BASE_URL ?>/contact">Contact</a>
-      <a class="nav-auth" href="<?= BASE_URL ?>/connexion">Connexion</a>
-      <span class="nav-sep">|</span>
-      <a class="nav-auth" href="<?= BASE_URL ?>/inscription">Inscription</a>
-    </nav>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+              aria-controls="mainNavbar" aria-expanded="false" aria-label="Ouvrir le menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <button class="burger" type="button" aria-label="Ouvrir le menu">
-      <span class="burger-lines"></span>
-    </button>
-  </div>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="btn btn-ecoride-primary fw-bold" href="<?= BASE_URL ?>/">Accueil</a></li>
+          <li class="nav-item"><a class="btn btn-ecoride-primary fw-bold" href="<?= BASE_URL ?>/trajets">Covoiturages</a></li>
+          <li class="nav-item"><a class="btn btn-ecoride-primary fw-bold" href="<?= BASE_URL ?>/contact">Contact</a></li>
+
+          <li class="nav-item d-none d-lg-block mx-1 text-secondary">|</li>
+
+          <li class="nav-item"><a class="nav-link text-secondary px-2" href="<?= BASE_URL ?>/connexion">Connexion</a></li>
+          <li class="nav-item d-none d-lg-block text-secondary">|</li>
+          <li class="nav-item"><a class="nav-link text-secondary px-2" href="<?= BASE_URL ?>/inscription">Inscription</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 </header>
 
-<main>
+<main class="flex-grow-1">

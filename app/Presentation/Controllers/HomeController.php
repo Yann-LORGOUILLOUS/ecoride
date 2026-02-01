@@ -3,8 +3,6 @@
         public function index(){
             $this->renderView('accueil', [
                 'pageTitle' => 'Accueil',
-                'flashMessage' => 'EN COURS DE CONSTRUCTION',
-                'flashType' => 'info',
             ]);
         }
     }

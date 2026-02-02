@@ -82,6 +82,56 @@ final class TripRepository
         return ['items' => $items, 'total' => $total];
     }
 
+    public function findDetailsById(int $tripId): ?array
+    {
+        $pdo = PdoConnection::get();
+
+        $sql = "
+            SELECT
+                t.id,
+                t.driver_id,
+                t.vehicule_id,
+                t.city_from,
+                t.city_to,
+                t.departure_datetime,
+                t.arrival_datetime,
+                t.price_credits,
+                t.seats_available,
+                t.smoking_allowed,
+                t.pets_allowed,
+                t.driver_notes,
+                t.status,
+
+                u.pseudo AS driver_pseudo,
+                u.avatar_url AS driver_avatar_url,
+                u.created_at AS driver_created_at,
+
+                (
+                    SELECT COUNT(*)
+                    FROM trips t2
+                    WHERE t2.driver_id = t.driver_id
+                ) AS driver_trips_count,
+
+                v.brand AS vehicle_brand,
+                v.model AS vehicle_model,
+                v.energy_type AS vehicle_energy,
+                v.seats_total AS vehicle_seats_total
+
+            FROM trips t
+            INNER JOIN users u ON u.id = t.driver_id
+            INNER JOIN vehicules v ON v.id = t.vehicule_id
+            WHERE t.id = :trip_id
+            LIMIT 1
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':trip_id', $tripId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row !== false ? $row : null;
+    }
+
     private function orderBy(string $sort): string
     {
         return match ($sort) {

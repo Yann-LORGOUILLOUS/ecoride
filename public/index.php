@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+session_start();
 define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'ecoride');
 define('DB_USER', 'root');
@@ -54,6 +55,10 @@ if ($route === '/'){
 } else if ($route === '/connexion'){
     $controller = new LoginController();
     $controller->login();
+    exit;
+} else if ($route === '/deconnexion'){
+    $controller = new LoginController();
+    $controller->logout();
     exit;
 } else if ($route === '/inscription'){
     $controller = new SignUpController();

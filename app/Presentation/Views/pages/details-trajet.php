@@ -222,27 +222,139 @@ $vehicleLabel = trim($vehicleBrand . ' ' . $vehicleModel);
     </div>
   </div>
 
+  <?php $isConnected = isset($_SESSION['user']); ?>
   <div class="card border-0 shadow-sm rounded-4">
-    <div class="card-body text-center py-4">
-      <a class="btn btn-ecoride-primary btn-lg rounded-pill fw-bold px-5" href="<?= BASE_URL ?>/connexion">
+  <div class="card-body text-center py-4">
+
+    <?php if ($isConnected): ?>
+      <button
+        id="reserveBtn"
+        type="button"
+        class="btn btn-ecoride-primary btn-lg rounded-pill fw-bold px-5"
+        data-bs-toggle="modal"
+        data-bs-target="#confirmReservationModal"
+      >
         RÉSERVER CE TRAJET
-      </a>
+      </button>
+    <?php else: ?>
+      <button
+        id="reserveBtn"
+        type="button"
+        class="btn btn-ecoride-primary btn-lg rounded-pill fw-bold px-5"
+        data-bs-toggle="modal"
+        data-bs-target="#loginRequiredModal"
+      >
+        RÉSERVER CE TRAJET
+      </button>
+
       <div class="text-secondary mt-2">
         Vous devez être connecté pour réserver un trajet
       </div>
+    <?php endif; ?>
 
-      <div class="mt-3">
-        <button
-          type="button"
-          class="btn btn-outline-secondary rounded-pill px-4"
-          onclick="window.history.back()"
-        >
-          ← Retour à la liste des trajets
+    <div class="mt-3">
+      <button
+        type="button"
+        class="btn btn-outline-secondary rounded-pill px-4"
+        onclick="window.history.back()"
+      >
+        ← Retour à la liste des trajets
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal fade" id="confirmReservationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body pt-0">
+        Confirmez-vous la réservation de ce trajet ?
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+          Annuler
+        </button>
+        <button type="button" class="btn btn-ecoride-primary rounded-pill px-4" id="confirmReserveYes">
+          Oui
         </button>
       </div>
     </div>
   </div>
-
 </div>
+
+<div class="modal fade" id="reservationSuccessModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Réservation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body pt-0">
+        Félicitations ! Trajet réservé.
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-ecoride-primary rounded-pill px-4" data-bs-dismiss="modal">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Connexion requise</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body pt-0">
+        Il faut être connecté pour réserver un trajet.
+        <div class="mt-3 d-grid gap-2">
+          <?php $redirect = urlencode($_SERVER['REQUEST_URI']); ?>
+          <a class="btn btn-ecoride-primary rounded-pill"
+            href="<?= BASE_URL ?>/connexion?redirect=<?= $redirect ?>">
+            Déjà inscrit ? Connectez-vous
+          </a>
+          <a class="btn btn-outline-secondary rounded-pill" href="<?= BASE_URL ?>/inscription">
+            Pas encore inscrit ? Inscrivez-vous
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const yesBtn = document.getElementById('confirmReserveYes');
+    const reserveBtn = document.getElementById('reserveBtn');
+
+    if (!yesBtn || !reserveBtn) return;
+
+    yesBtn.addEventListener('click', function () {
+      const confirmEl = document.getElementById('confirmReservationModal');
+      const successEl = document.getElementById('reservationSuccessModal');
+
+      if (!confirmEl || !successEl) return;
+
+      const confirmModal = bootstrap.Modal.getOrCreateInstance(confirmEl);
+      const successModal = bootstrap.Modal.getOrCreateInstance(successEl);
+
+      confirmModal.hide();
+      successModal.show();
+
+      reserveBtn.disabled = true;
+      reserveBtn.classList.add('disabled');
+      reserveBtn.setAttribute('aria-disabled', 'true');
+    });
+  })();
+</script>
+
 
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

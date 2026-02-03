@@ -35,10 +35,30 @@
           <li class="nav-item"><a class="btn btn-ecoride-primary fw-bold" href="<?= BASE_URL ?>/contact">Contact</a></li>
 
           <li class="nav-item d-none d-lg-block mx-1 text-secondary">|</li>
+          <?php
+            $isConnected = isset($_SESSION['user']);
+            $userPseudo = $isConnected ? (string)$_SESSION['user']['pseudo'] : null;
+          ?>
 
-          <li class="nav-item"><a class="nav-link text-secondary px-2" href="<?= BASE_URL ?>/connexion">Connexion</a></li>
-          <li class="nav-item d-none d-lg-block text-secondary">|</li>
-          <li class="nav-item"><a class="nav-link text-secondary px-2" href="<?= BASE_URL ?>/inscription">Inscription</a></li>
+          <?php if (!$isConnected): ?>
+            <li class="nav-item">
+              <a class="nav-link text-secondary px-2" href="<?= BASE_URL ?>/connexion">Connexion</a>
+            </li>
+            <li class="nav-item d-none d-lg-block text-secondary">|</li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary px-2" href="<?= BASE_URL ?>/inscription">Inscription</a>
+            </li>
+          <?php else: ?>
+            <li class="nav-item">
+              <a class="nav-link text-secondary px-2 fw-semibold" href="<?= BASE_URL ?>/mon-compte">
+                <?= htmlspecialchars($userPseudo ?? '', ENT_QUOTES, 'UTF-8') ?>
+              </a>
+            </li>
+            <li class="nav-item d-none d-lg-block text-secondary">|</li>
+            <li class="nav-item">
+              <a class="nav-link text-danger px-2" href="<?= BASE_URL ?>/deconnexion">Se déconnecter</a>
+            </li>
+          <?php endif; ?>
         </ul>
       </div>
     </div>

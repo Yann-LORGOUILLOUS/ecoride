@@ -130,7 +130,9 @@
               </div>
 
               <div class="d-grid">
-                <a class="btn btn-ecoride-primary rounded-pill fw-semibold" href="<?= BASE_URL ?>/details-trajet?id=<?= $tripId ?>">
+                <?php $back = urlencode($_SERVER['REQUEST_URI'] ?? (BASE_URL . '/trajets')); ?>
+                <a class="btn btn-ecoride-primary rounded-pill fw-semibold"
+                  href="<?= BASE_URL ?>/details-trajet?id=<?= $tripId ?>&back=<?= $back ?>">
                   Voir le détail
                 </a>
               </div>

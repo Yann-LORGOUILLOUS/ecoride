@@ -45,9 +45,31 @@ $fmtDate = function (string $dt): string {
 $smokingLabel = $smokingAllowed ? 'Véhicule fumeur' : 'Véhicule non-fumeur';
 $petsLabel = $petsAllowed ? 'Animaux acceptés' : 'Animaux refusés';
 $vehicleLabel = trim($vehicleBrand . ' ' . $vehicleModel);
+$flash = $flash ?? null;
+$csrfToken = (string)($csrfToken ?? '');
+$alreadyReserved = (bool)($alreadyReserved ?? false);
+$isConnected = isset($_SESSION['user']);
+$redirect = urlencode($_SERVER['REQUEST_URI'] ?? '/');
+$rawBack = (string)($_GET['back'] ?? '');
+$backUrl = '/trajets';
+if ($rawBack !== '') {
+  $decoded = urldecode($rawBack);
+  if ($decoded[0] === '/' && !str_starts_with($decoded, '//') && !str_contains($decoded, '://')) {
+    $backUrl = $decoded;
+  }
+}
 ?>
 
 <div class="container-xxl px-3 py-4">
+  <div class="container-xxl px-3 py-4">
+
+  <?php if (is_array($flash) && ($flash['message'] ?? '') !== ''): ?>
+    <div class="alert alert-<?= htmlspecialchars((string)($flash['type'] ?? 'info')) ?> rounded-4" role="alert">
+      <?= htmlspecialchars((string)$flash['message']) ?>
+    </div>
+  <?php endif; ?>
+
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
 
   <div class="card border-0 shadow-sm rounded-4 mb-4">
     <div class="card-body py-4">
@@ -222,7 +244,12 @@ $vehicleLabel = trim($vehicleBrand . ' ' . $vehicleModel);
     </div>
   </div>
 
-  <?php $isConnected = isset($_SESSION['user']); ?>
+  <?php
+  $isConnected = isset($_SESSION['user']);
+  $csrfToken = (string)($csrfToken ?? '');
+  $alreadyReserved = (bool)($alreadyReserved ?? false);
+  $tripId = (int)($trip['id'] ?? 0);
+  ?>
   <div class="card border-0 shadow-sm rounded-4">
   <div class="card-body text-center py-4">
 
@@ -233,6 +260,7 @@ $vehicleLabel = trim($vehicleBrand . ' ' . $vehicleModel);
         class="btn btn-ecoride-primary btn-lg rounded-pill fw-bold px-5"
         data-bs-toggle="modal"
         data-bs-target="#confirmReservationModal"
+        <?= $alreadyReserved ? 'disabled aria-disabled="true"' : '' ?>
       >
         RÉSERVER CE TRAJET
       </button>
@@ -253,13 +281,12 @@ $vehicleLabel = trim($vehicleBrand . ' ' . $vehicleModel);
     <?php endif; ?>
 
     <div class="mt-3">
-      <button
-        type="button"
+      <a
         class="btn btn-outline-secondary rounded-pill px-4"
-        onclick="window.history.back()"
+        href="<?= htmlspecialchars($backUrl) ?>"
       >
         ← Retour à la liste des trajets
-      </button>
+      </a>
     </div>
 
   </div>
@@ -279,9 +306,14 @@ $vehicleLabel = trim($vehicleBrand . ' ' . $vehicleModel);
         <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
           Annuler
         </button>
-        <button type="button" class="btn btn-ecoride-primary rounded-pill px-4" id="confirmReserveYes">
-          Oui
-        </button>
+        <form method="post" action="<?= BASE_URL ?>/reserver-trajet" class="d-inline">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+          <input type="hidden" name="trip_id" value="<?= $tripId ?>">
+          <input type="hidden" name="back" value="<?= htmlspecialchars($backUrl) ?>">
+          <button type="submit" class="btn btn-ecoride-primary rounded-pill px-4">
+            Oui
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -321,7 +353,8 @@ $vehicleLabel = trim($vehicleBrand . ' ' . $vehicleModel);
             href="<?= BASE_URL ?>/connexion?redirect=<?= $redirect ?>">
             Déjà inscrit ? Connectez-vous
           </a>
-          <a class="btn btn-outline-secondary rounded-pill" href="<?= BASE_URL ?>/inscription">
+          <a class="btn btn-outline-secondary rounded-pill"
+            href="<?= BASE_URL ?>/inscription?redirect=<?= $redirect ?>">
             Pas encore inscrit ? Inscrivez-vous
           </a>
         </div>
@@ -330,31 +363,26 @@ $vehicleLabel = trim($vehicleBrand . ' ' . $vehicleModel);
   </div>
 </div>
 
+<?php if (($_GET['reserved'] ?? '') === '1'): ?>
 <script>
   (function () {
-    const yesBtn = document.getElementById('confirmReserveYes');
+    const successEl = document.getElementById('reservationSuccessModal');
     const reserveBtn = document.getElementById('reserveBtn');
+    if (!successEl) return;
 
-    if (!yesBtn || !reserveBtn) return;
+    bootstrap.Modal.getOrCreateInstance(successEl).show();
 
-    yesBtn.addEventListener('click', function () {
-      const confirmEl = document.getElementById('confirmReservationModal');
-      const successEl = document.getElementById('reservationSuccessModal');
-
-      if (!confirmEl || !successEl) return;
-
-      const confirmModal = bootstrap.Modal.getOrCreateInstance(confirmEl);
-      const successModal = bootstrap.Modal.getOrCreateInstance(successEl);
-
-      confirmModal.hide();
-      successModal.show();
-
+    if (reserveBtn) {
       reserveBtn.disabled = true;
       reserveBtn.classList.add('disabled');
       reserveBtn.setAttribute('aria-disabled', 'true');
-    });
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('reserved');
+    window.history.replaceState({}, '', url.toString());
   })();
 </script>
-
+<?php endif; ?>
 
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

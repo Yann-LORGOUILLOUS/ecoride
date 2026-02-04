@@ -13,6 +13,7 @@ require_once __DIR__ . '/../app/Presentation/Controllers/ContactUsController.php
 require_once __DIR__ . '/../app/Presentation/Controllers/LegalNoticesController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/RidesController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/RideDetailsController.php';
+require_once __DIR__ . '/../app/Presentation/Controllers/ReserveTripController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/UsersPublicInfosController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/CreateRideController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/TripIncidentController.php';
@@ -79,6 +80,10 @@ if ($route === '/'){
 } else if ($route === '/details-trajet'){
     $controller = new RideDetailsController();
     $controller->rideDetails();
+    exit;
+} else if ($route === '/reserver-trajet'){
+    $controller = new ReserveTripController();
+    $controller->reserve();
     exit;
 } else if ($route === '/profils'){
     $controller = new UsersPublicInfosController();

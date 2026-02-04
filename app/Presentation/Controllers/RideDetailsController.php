@@ -31,11 +31,31 @@ class RideDetailsController extends BaseController
         $rating = $driverId > 0 ? $reviewRepo->getDriverRatingSummary($driverId) : ['avg' => 0.0, 'count' => 0];
         $reviews = $driverId > 0 ? $reviewRepo->findApprovedByDriverId($driverId, 8) : [];
 
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
+
+        $flash = $_SESSION['flash'] ?? null;
+        unset($_SESSION['flash']);
+
+        $isConnected = isset($_SESSION['user']);
+        $alreadyReserved = false;
+
+        if ($isConnected) {
+            $reservationRepo = new ReservationRepository();
+            $alreadyReserved = $reservationRepo->userHasConfirmedReservation($tripId, (int)$_SESSION['user']['id']);
+        }
+        
         $this->renderView('details-trajet', [
             'pageTitle' => 'Détails du trajet',
             'trip' => $trip,
             'driverRating' => $rating,
             'driverReviews' => $reviews,
+            'flash' => $flash,
+            'csrfToken' => $_SESSION['csrf_token'],
+            'alreadyReserved' => $alreadyReserved,
         ]);
     }
 }

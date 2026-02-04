@@ -19,4 +19,38 @@ final class UserRepository
         $user = $stmt->fetch();
         return is_array($user) ? $user : null;
     }
+
+    public function existsByEmail(string $email): bool
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('SELECT 1 FROM users WHERE email = :email LIMIT 1');
+        $stmt->execute(['email' => $email]);
+
+        return (bool)$stmt->fetchColumn();
+    }
+
+    public function createUser(array $data): int
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            INSERT INTO users (pseudo, last_name, first_name, email, password_hash, avatar_url, role, credits, suspended)
+            VALUES (:pseudo, :last_name, :first_name, :email, :password_hash, :avatar_url, :role, :credits, :suspended)
+        ');
+
+        $stmt->execute([
+            'pseudo' => $data['pseudo'],
+            'last_name' => $data['last_name'],
+            'first_name' => $data['first_name'],
+            'email' => $data['email'],
+            'password_hash' => $data['password_hash'],
+            'avatar_url' => $data['avatar_url'],
+            'role' => $data['role'],
+            'credits' => $data['credits'],
+            'suspended' => $data['suspended'],
+        ]);
+
+        return (int)$pdo->lastInsertId();
+    }
 }

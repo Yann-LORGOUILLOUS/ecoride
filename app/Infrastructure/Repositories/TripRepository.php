@@ -14,7 +14,7 @@ final class TripRepository
     ): array {
         $pdo = PdoConnection::get();
 
-        $whereSql = " WHERE t.status = 'planned' AND t.seats_available >= 1 ";
+        $whereSql = " WHERE t.status = 'planned' AND t.seats_available >= 1 AND t.price_credits >= 1 ";
         $params = [];
 
         if ($cityFrom !== null && $cityFrom !== '') {
@@ -132,6 +132,58 @@ final class TripRepository
         return $row !== false ? $row : null;
     }
 
+    public function createTrip(array $data): int
+{
+    $pdo = PdoConnection::get();
+
+    $stmt = $pdo->prepare('
+        INSERT INTO trips (
+            driver_id,
+            vehicule_id,
+            city_from,
+            city_to,
+            departure_datetime,
+            arrival_datetime,
+            price_credits,
+            seats_available,
+            smoking_allowed,
+            pets_allowed,
+            driver_notes,
+            status
+        ) VALUES (
+            :driver_id,
+            :vehicule_id,
+            :city_from,
+            :city_to,
+            :departure_datetime,
+            :arrival_datetime,
+            :price_credits,
+            :seats_available,
+            :smoking_allowed,
+            :pets_allowed,
+            :driver_notes,
+            :status
+        )
+    ');
+
+    $stmt->execute([
+        'driver_id' => $data['driver_id'],
+        'vehicule_id' => $data['vehicule_id'],
+        'city_from' => $data['city_from'],
+        'city_to' => $data['city_to'],
+        'departure_datetime' => $data['departure_datetime'],
+        'arrival_datetime' => $data['arrival_datetime'],
+        'price_credits' => $data['price_credits'],
+        'seats_available' => $data['seats_available'],
+        'smoking_allowed' => $data['smoking_allowed'],
+        'pets_allowed' => $data['pets_allowed'],
+        'driver_notes' => $data['driver_notes'],
+        'status' => $data['status'],
+    ]);
+
+    return (int)$pdo->lastInsertId();
+}
+    
     private function orderBy(string $sort): string
     {
         return match ($sort) {
@@ -142,4 +194,36 @@ final class TripRepository
             default      => " ORDER BY t.departure_datetime ASC",
         };
     }
+
+    public function moderateTrip(int $tripId, string $status, ?int $priceCredits): void
+    {
+        $allowed = ['planned', 'cancelled'];
+        if (!in_array($status, $allowed, true)) {
+            throw new InvalidArgumentException('Invalid status.');
+        }
+
+        $pdo = PdoConnection::get();
+
+        if ($status === 'planned') {
+            if ($priceCredits === null || $priceCredits < 1) {
+                throw new InvalidArgumentException('Price required to plan a trip.');
+            }
+
+            $stmt = $pdo->prepare("
+                UPDATE trips
+                SET status = 'planned', price_credits = :price
+                WHERE id = :id AND status = 'pending'
+            ");
+            $stmt->execute(['price' => $priceCredits, 'id' => $tripId]);
+            return;
+        }
+
+        $stmt = $pdo->prepare("
+            UPDATE trips
+            SET status = 'cancelled'
+            WHERE id = :id AND status = 'pending'
+        ");
+        $stmt->execute(['id' => $tripId]);
+    }
+
 }

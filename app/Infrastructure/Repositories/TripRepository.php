@@ -103,6 +103,7 @@ final class TripRepository
                 t.status,
 
                 u.pseudo AS driver_pseudo,
+                u.email AS driver_email,
                 u.avatar_url AS driver_avatar_url,
                 u.created_at AS driver_created_at,
 

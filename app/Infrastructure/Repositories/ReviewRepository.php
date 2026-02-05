@@ -72,4 +72,74 @@ final class ReviewRepository
         return (int) $stmt->fetchColumn();
     }
 
+    public function findPendingForValidation(): array
+    {
+        $pdo = PdoConnection::get();
+
+        $sql = "
+            SELECT
+                r.id,
+                r.trip_id,
+                r.author_id,
+                r.rating,
+                r.comment,
+                r.created_at,
+
+                author.pseudo AS author_pseudo,
+                'PASSAGER' AS author_role,
+                author.email AS author_email,
+
+                driver.id AS recipient_id,
+                driver.pseudo AS recipient_pseudo,
+                'CONDUCTEUR' AS recipient_role
+
+            FROM reviews r
+            INNER JOIN users author ON author.id = r.author_id
+            INNER JOIN trips t ON t.id = r.trip_id
+            INNER JOIN users driver ON driver.id = t.driver_id
+            WHERE r.status = 'pending'
+            ORDER BY r.created_at DESC
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function approve(int $reviewId, int $validatorId): void
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            UPDATE reviews
+            SET status = 'approved',
+                validated_by = :validator_id,
+                validated_at = NOW()
+            WHERE id = :id AND status = 'pending'
+        ");
+
+        $stmt->execute([
+            'validator_id' => $validatorId,
+            'id' => $reviewId,
+        ]);
+    }
+
+    public function reject(int $reviewId, int $validatorId): void
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            UPDATE reviews
+            SET status = 'rejected',
+                validated_by = :validator_id,
+                validated_at = NOW()
+            WHERE id = :id AND status = 'pending'
+        ");
+
+        $stmt->execute([
+            'validator_id' => $validatorId,
+            'id' => $reviewId,
+        ]);
+    }
 }

@@ -99,18 +99,23 @@ final class LoginController extends BaseController
             exit;
         }
 
+        $role = (string)($_SESSION['user']['role'] ?? '');
+
+        if ($role === 'employee') {
+            header('Location: ' . BASE_URL . '/dashboard-moderateur');
+            exit;
+        }
+
         header('Location: ' . BASE_URL . '/mon-compte');
         exit;
     }
 
     private function verifyPassword(string $input, string $stored): bool
     {
-        // Si le champ contient un vrai hash (bcrypt/argon), on vérifie correctement
         if (str_starts_with($stored, '$2y$') || str_starts_with($stored, '$argon2')) {
             return password_verify($input, $stored);
         }
 
-        // Sinon (fixtures actuelles), comparaison constante
         return $stored !== '' && hash_equals($stored, $input);
     }
 

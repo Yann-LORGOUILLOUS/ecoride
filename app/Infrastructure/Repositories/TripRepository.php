@@ -226,4 +226,38 @@ final class TripRepository
         $stmt->execute(['id' => $tripId]);
     }
 
+    public function findPendingForValidation(): array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            SELECT
+                t.id,
+                t.created_at,
+                t.departure_datetime,
+                u.pseudo AS driver_pseudo
+            FROM trips t
+            INNER JOIN users u ON u.id = t.driver_id
+            WHERE t.status = 'pending'
+            ORDER BY t.created_at DESC
+        ");
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countPending(): int
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) 
+            FROM trips 
+            WHERE status = 'pending'
+        ");
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
+
 }

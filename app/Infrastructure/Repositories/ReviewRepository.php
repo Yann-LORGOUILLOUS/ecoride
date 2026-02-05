@@ -57,4 +57,19 @@ final class ReviewRepository
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function countPending(): int
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*)
+            FROM reviews
+            WHERE status = 'pending'
+        ");
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
+
 }

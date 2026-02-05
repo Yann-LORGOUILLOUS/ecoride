@@ -38,6 +38,9 @@
           <?php
             $isConnected = isset($_SESSION['user']);
             $userPseudo = $isConnected ? (string)$_SESSION['user']['pseudo'] : null;
+
+            $isEmployee = $isConnected && (($_SESSION['user']['role'] ?? null) === 'employee');
+            $accountUrl = $isEmployee ? (BASE_URL . '/dashboard-moderateur') : (BASE_URL . '/mon-compte');
           ?>
 
           <?php if (!$isConnected): ?>
@@ -50,7 +53,7 @@
             </li>
           <?php else: ?>
             <li class="nav-item">
-              <a class="nav-link text-secondary px-2 fw-semibold" href="<?= BASE_URL ?>/mon-compte">
+              <a class="nav-link text-secondary px-2 fw-semibold" href="<?= $accountUrl ?>">
                 <?= htmlspecialchars($userPseudo ?? '', ENT_QUOTES, 'UTF-8') ?>
               </a>
             </li>

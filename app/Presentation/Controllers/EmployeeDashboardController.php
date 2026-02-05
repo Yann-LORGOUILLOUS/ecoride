@@ -18,7 +18,7 @@
                         $type = $report['type'] ?? null;
                         $status = $report['status'] ?? null;
 
-                        if ($type === 'trip_incident' && $status === 'open') {
+                        if ($type === 'trip_incident' && $status === 'pending') {
                             $openTripIncidentsCount++;
                         }
                     }

@@ -1,28 +1,37 @@
-[{
-  "_id": {
-    "$oid": "695ed580a76a8fd28abc44a8"
-  },
-  "type": "trip_incident",
-  "status": "resolved",
-  "reporter_user_id": 4,
-  "trip_id": 1,
-  "comment": "Le conducteur est arrivé en retard.",
-  "created_at": {
-    "$date": "2026-02-10T14:30:00.000Z"
-  },
-  "resolved_at": "2026-02-11T09:30:00Z",
-  "resolved_by_employee_id": "2"
-},
-{
-  "_id": {
-    "$oid": "695ed5c7a76a8fd28abc44aa"
-  },
-  "type": "app_issue",
-  "status": "open",
-  "reporter_user_id": 4,
-  "page": "trip_list",
-  "comment": "La liste des trajets met beaucoup de temps à charger.",
-  "created_at": {
-    "$date": "2026-02-10T15:10:00.000Z"
-  }
-}]
+[
+    {
+        "_id": "695ed580a76a8fd28abc44a8",
+        "type": "trip_incident",
+        "status": "approved",
+        "trip_id": 1,
+        "reporter_user_id": 4,
+        "target_user_id": 2,
+        "subject": "Retard",
+        "comment": "Le conducteur est arrivé en retard.",
+        "severity": "low",
+        "created_at": "2026-02-10T14:30:00Z",
+        "moderation": {
+            "handled_by_employee_id": 14,
+            "handled_at": "2026-02-05T20:37:20+00:00",
+            "decision": "approved",
+            "decision_reason": null
+        }
+    },
+    {
+        "_id": "695ed5c7a76a8fd28abc44aa",
+        "type": "app_issue",
+        "status": "pending",
+        "reporter_user_id": 4,
+        "page": "trip_list",
+        "subject": "Lenteur page trajets",
+        "comment": "La liste des trajets met beaucoup de temps à charger.",
+        "severity": "medium",
+        "created_at": "2026-02-10T15:10:00Z",
+        "moderation": {
+            "handled_by_employee_id": null,
+            "handled_at": null,
+            "decision": null,
+            "decision_reason": null
+        }
+    }
+]

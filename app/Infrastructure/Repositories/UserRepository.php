@@ -53,4 +53,34 @@ final class UserRepository
 
         return (int)$pdo->lastInsertId();
     }
+
+    public function findById(int $id): ?array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            SELECT id, pseudo, email, role, validated_reports_count
+            FROM users
+            WHERE id = :id
+            LIMIT 1
+        ');
+        $stmt->execute(['id' => $id]);
+
+        $row = $stmt->fetch();
+        return is_array($row) ? $row : null;
+    }
+
+    public function incrementValidatedReportsCount(int $userId): void
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            UPDATE users
+            SET validated_reports_count = validated_reports_count + 1
+            WHERE id = :id
+            LIMIT 1
+        ');
+        $stmt->execute(['id' => $userId]);
+    }
+
 }

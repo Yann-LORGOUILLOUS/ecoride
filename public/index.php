@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 session_start();
+require_once __DIR__ . '/../vendor/autoload.php';
+\App\Infrastructure\Config\Env::load(__DIR__ . '/../.env');
 define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'ecoride');
 define('DB_USER', 'root');

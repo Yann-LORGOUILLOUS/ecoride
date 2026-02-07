@@ -145,4 +145,20 @@ final class UserRepository
             'id' => $userId,
         ]);
     }
+    
+    public function findProfileById(int $id): ?array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            SELECT id, pseudo, last_name, first_name, email, role, credits, validated_reports_count
+            FROM users
+            WHERE id = :id
+            LIMIT 1
+        ');
+        $stmt->execute(['id' => $id]);
+
+        $row = $stmt->fetch();
+        return is_array($row) ? $row : null;
+    }
 }

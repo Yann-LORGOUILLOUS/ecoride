@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : jeu. 05 fév. 2026 à 21:12
+-- Généré le : sam. 07 fév. 2026 à 17:48
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -171,7 +171,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `pseudo`, `last_name`, `first_name`, `email`, `password_hash`, `avatar_url`, `role`, `credits`, `suspended`, `validated_reports_count`, `created_at`) VALUES
-(4, 'amina', 'EL AMRANI', 'Amina', 'amina@ecoride.local', 'Password123!', NULL, 'user', 14, 0, 0, '2026-02-01 17:36:13'),
+(4, 'amina', 'EL AMRANI', 'Amina', 'amina@ecoride.local', 'Password123!', NULL, 'user', 14, 0, 1, '2026-02-01 17:36:13'),
 (5, 'lucas', 'MARTIN', 'Lucas', 'lucas@ecoride.local', 'Password123!', NULL, 'user', 20, 0, 0, '2026-02-01 17:36:13'),
 (6, 'camille', 'DURAND', 'Camille', 'camille@ecoride.local', 'Password123!', NULL, 'user', 20, 0, 0, '2026-02-01 17:36:13'),
 (7, 'youssef', 'BENALI', 'Youssef', 'youssef@ecoride.local', 'Password123!', NULL, 'user', 14, 0, 0, '2026-02-01 17:36:13'),
@@ -182,9 +182,10 @@ INSERT INTO `users` (`id`, `pseudo`, `last_name`, `first_name`, `email`, `passwo
 (12, 'sarah', 'COHEN', 'Sarah', 'sarah@ecoride.local', 'Password123!', NULL, 'user', 20, 0, 0, '2026-02-01 17:36:13'),
 (13, 'julien', 'MOREAU', 'Julien', 'julien@ecoride.local', 'Password123!', NULL, 'user', 20, 0, 0, '2026-02-01 17:36:13'),
 (14, 'moderateur', 'DUPUIS', 'Alex', 'moderateur@ecoride.local', 'Password123!', NULL, 'employee', 20, 0, 0, '2026-02-01 17:36:13'),
-(15, 'yann', 'LORGOUILLOUS', 'Yann', 'yann@ecoride.local', 'Password123!', NULL, 'admin', 20, 0, 0, '2026-02-01 17:36:13'),
+(15, 'yann', 'LORGOUILLOUS', 'Yann', 'yann@ecoride.local', 'Password123!', 'https://avatars.githubusercontent.com/u/215014255?v=4', 'admin', 20, 0, 0, '2026-02-01 17:36:13'),
 (16, 'Test1', 'NomTest', 'PrénomTest', 'test@ecoride.local', '$2y$10$Ng2ddBX1epm7IpRMnBmWjO0/dlJSrz5gZy0qvGhsFqKSMyNZnsR.2', NULL, 'user', 20, 0, 0, '2026-02-04 20:35:14'),
-(17, 'Test2', 'NomTest2', 'PrenomTest2', 'test2@ecoride.local', '$2y$10$A.V6wHcUeSwnWNQQMnhyE.5sILQKLgWXocUyKw17GTbsEYmBnuavK', NULL, 'user', 20, 0, 0, '2026-02-04 20:36:02');
+(17, 'Test2', 'NomTest2', 'PrenomTest2', 'test2@ecoride.local', '$2y$10$A.V6wHcUeSwnWNQQMnhyE.5sILQKLgWXocUyKw17GTbsEYmBnuavK', NULL, 'user', 20, 0, 0, '2026-02-04 20:36:02'),
+(18, 'Test3', 'NomTest3', 'PrenomTest3', 'Test3@ecoride.local', '$2y$10$hAnq7NRDh9/iWjMfDzbFuOXTQjGO0ABiDlkdAgZtLWTGedGIWLczO', NULL, 'employee', 20, 0, 0, '2026-02-07 17:11:32');
 
 -- --------------------------------------------------------
 
@@ -300,7 +301,7 @@ ALTER TABLE `trips`
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'identifiant', AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'identifiant', AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT pour la table `vehicules`

@@ -135,8 +135,8 @@ $userId = (int) ($_SESSION['user']['id'] ?? 0);
               <a class="btn btn-light border rounded-pill fw-semibold" href="<?= BASE_URL ?>/creer-trajet">
                 Proposer un trajet
               </a>
-              <a class="btn btn-light border rounded-pill fw-semibold" href="<?= BASE_URL ?>/mes-trajets">
-                Mes trajets actifs
+              <a class="btn btn-light border rounded-pill fw-semibold" href="<?= BASE_URL ?>/mes-informations#myTripsDriver">
+                Mes trajets
               </a>
             <?php endif; ?>
 
@@ -144,7 +144,7 @@ $userId = (int) ($_SESSION['user']['id'] ?? 0);
               <a class="btn btn-light border rounded-pill fw-semibold" href="<?= BASE_URL ?>/trajets">
                 Rechercher un trajet
               </a>
-              <a class="btn btn-light border rounded-pill fw-semibold" href="<?= BASE_URL ?>/mes-reservations">
+              <a class="btn btn-light border rounded-pill fw-semibold" href="<?= BASE_URL ?>/mes-informations#myTripsPassenger">
                 Mes réservations
               </a>
             <?php endif; ?>

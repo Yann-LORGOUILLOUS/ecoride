@@ -161,4 +161,95 @@ final class UserRepository
         $row = $stmt->fetch();
         return is_array($row) ? $row : null;
     }
+
+    public function findEditableById(int $id): ?array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            SELECT id, pseudo, last_name, first_name, email, avatar_url, credits
+            FROM users
+            WHERE id = :id
+            LIMIT 1
+        ');
+        $stmt->execute(['id' => $id]);
+
+        $row = $stmt->fetch();
+        return is_array($row) ? $row : null;
+    }
+
+    public function existsByEmailExceptId(string $email, int $excludeId): bool
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            SELECT 1
+            FROM users
+            WHERE email = :email AND id <> :id
+            LIMIT 1
+        ');
+        $stmt->execute([
+            'email' => $email,
+            'id' => $excludeId,
+        ]);
+
+        return (bool)$stmt->fetchColumn();
+    }
+
+    public function updateProfile(int $userId, array $data): void
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            UPDATE users
+            SET pseudo = :pseudo,
+                last_name = :last_name,
+                first_name = :first_name,
+                email = :email,
+                avatar_url = :avatar_url
+            WHERE id = :id
+            LIMIT 1
+        ');
+
+        $stmt->execute([
+            'pseudo' => $data['pseudo'],
+            'last_name' => $data['last_name'],
+            'first_name' => $data['first_name'],
+            'email' => $data['email'],
+            'avatar_url' => $data['avatar_url'],
+            'id' => $userId,
+        ]);
+    }
+
+    public function findPasswordHashById(int $id): ?string
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            SELECT password_hash
+            FROM users
+            WHERE id = :id
+            LIMIT 1
+        ');
+        $stmt->execute(['id' => $id]);
+
+        $hash = $stmt->fetchColumn();
+        return is_string($hash) ? $hash : null;
+    }
+
+    public function updatePasswordHash(int $userId, string $passwordHash): void
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            UPDATE users
+            SET password_hash = :password_hash
+            WHERE id = :id
+            LIMIT 1
+        ');
+        $stmt->execute([
+            'password_hash' => $passwordHash,
+            'id' => $userId,
+        ]);
+    }
 }

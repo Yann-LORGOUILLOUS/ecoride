@@ -261,4 +261,108 @@ final class TripRepository
         return (int) $stmt->fetchColumn();
     }
 
+    public function findDriverActiveTrips(int $driverId): array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            SELECT
+                id,
+                city_from,
+                city_to,
+                departure_datetime,
+                arrival_datetime,
+                price_credits,
+                seats_available,
+                status
+            FROM trips
+            WHERE driver_id = :driver_id
+            AND status IN ('pending','planned','ongoing')
+            ORDER BY departure_datetime ASC
+        ");
+
+        $stmt->execute(['driver_id' => $driverId]);
+        $rows = $stmt->fetchAll();
+
+        return is_array($rows) ? $rows : [];
+    }
+
+    public function updateStatusForDriver(int $tripId, int $driverId, string $fromStatus, string $toStatus): bool
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            UPDATE trips
+            SET status = :to_status
+            WHERE id = :id
+            AND driver_id = :driver_id
+            AND status = :from_status
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'to_status' => $toStatus,
+            'id' => $tripId,
+            'driver_id' => $driverId,
+            'from_status' => $fromStatus,
+        ]);
+
+        return $stmt->rowCount() === 1;
+    }
+
+    public function cancelTripForDriver(int $tripId, int $driverId): bool
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            UPDATE trips
+            SET status = 'cancelled'
+            WHERE id = :id
+            AND driver_id = :driver_id
+            AND status IN ('pending','planned')
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'id' => $tripId,
+            'driver_id' => $driverId,
+        ]);
+
+        return $stmt->rowCount() === 1;
+    }
+
+    public function findPassengerContactsForTrip(int $tripId): array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            SELECT u.email, u.pseudo
+            FROM reservations r
+            INNER JOIN users u ON u.id = r.user_id
+            WHERE r.trip_id = :trip_id
+            AND r.status = 'confirmed'
+        ");
+
+        $stmt->execute(['trip_id' => $tripId]);
+        $rows = $stmt->fetchAll();
+
+        return is_array($rows) ? $rows : [];
+    }
+
+    public function findTripBasicById(int $tripId): ?array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            SELECT id, city_from, city_to, departure_datetime, arrival_datetime, status
+            FROM trips
+            WHERE id = :id
+            LIMIT 1
+        ");
+
+        $stmt->execute(['id' => $tripId]);
+        $row = $stmt->fetch();
+
+        return is_array($row) ? $row : null;
+    }
 }

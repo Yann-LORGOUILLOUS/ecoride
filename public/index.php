@@ -26,8 +26,6 @@ require_once __DIR__ . '/../app/Presentation/Controllers/UserDashboardController
 require_once __DIR__ . '/../app/Presentation/Controllers/UserInfosController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/UserVehiculesController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/UserCreditsController.php';
-require_once __DIR__ . '/../app/Presentation/Controllers/UserRidesController.php';
-require_once __DIR__ . '/../app/Presentation/Controllers/UserReservationsController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/UserReviewsController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/EmployeeDashboardController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/EmployeeTripsValidationListController.php';
@@ -123,14 +121,6 @@ if ($route === '/'){
 } else if ($route === '/mes-credits'){
     $controller = new UserCreditsController();
     $controller->userCredits();
-    exit;
-} else if ($route === '/mes-trajets'){
-    $controller = new UserRidesController();
-    $controller->userRides();
-    exit;
-} else if ($route === '/mes-reservations'){
-    $controller = new UserReservationsController();
-    $controller->userReservations();
     exit;
 } else if ($route === '/mes-avis'){
     $controller = new UserReviewsController();

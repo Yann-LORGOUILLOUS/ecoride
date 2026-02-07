@@ -92,4 +92,57 @@ final class UserRepository
 
         return (int)($row['cnt'] ?? 0);
     }
+
+    public function searchUsers(?string $q, string $sort, string $dir): array
+    {
+        $pdo = PdoConnection::get();
+
+        $allowedSort = [
+            'pseudo' => 'pseudo',
+            'created_at' => 'created_at',
+            'role' => 'role',
+            'suspended' => 'suspended',
+        ];
+
+        $sortCol = $allowedSort[$sort] ?? 'pseudo';
+        $dirSql = strtolower($dir) === 'desc' ? 'DESC' : 'ASC';
+
+        $sql = '
+            SELECT id, pseudo, email, role, suspended, validated_reports_count, created_at
+            FROM users
+        ';
+
+        $params = [];
+        $q = trim((string)$q);
+
+        if ($q !== '') {
+            $sql .= ' WHERE pseudo LIKE :q OR email LIKE :q ';
+            $params['q'] = '%' . $q . '%';
+        }
+
+        $sql .= " ORDER BY {$sortCol} {$dirSql}, id ASC ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $rows = $stmt->fetchAll();
+        return is_array($rows) ? $rows : [];
+    }
+
+    public function setSuspended(int $userId, bool $suspended): void
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            UPDATE users
+            SET suspended = :suspended
+            WHERE id = :id
+            LIMIT 1
+        ');
+
+        $stmt->execute([
+            'suspended' => $suspended ? 1 : 0,
+            'id' => $userId,
+        ]);
+    }
 }

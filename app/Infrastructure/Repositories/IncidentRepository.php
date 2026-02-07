@@ -1,52 +1,87 @@
 <?php declare(strict_types=1);
 
+use App\Infrastructure\Database\MongoConnection;
+use MongoDB\BSON\ObjectId;
+
 final class IncidentRepository
 {
-    private string $filePath;
+    private string $collectionName;
 
-    public function __construct(?string $filePath = null)
+    public function __construct(?string $collectionName = null)
     {
-        $this->filePath = $filePath ?? (__DIR__ . '/../../../database/mongodb/ecoride.reports.json');
+        $this->collectionName = $collectionName
+            ?? (string)($_ENV['MONGODB_COLLECTION'] ?? 'reports');
     }
 
     public function findPendingTripIncidents(): array
     {
-        $all = $this->readAll();
+        $collection = $this->getCollection();
+
+        $cursor = $collection->find(
+            [
+                'type' => 'trip_incident',
+                'status' => ['$in' => ['pending', 'open']],
+            ],
+            [
+                'sort' => ['created_at' => -1],
+                'typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array'],
+            ]
+        );
 
         $items = [];
-        foreach ($all as $doc) {
-            $type = (string)($doc['type'] ?? '');
-            if ($type !== 'trip_incident') { continue; }
-            $status = (string)($doc['status'] ?? '');
-            if ($status === 'open') { $status = 'pending'; }
-            if ($status !== 'pending') { continue; }
+        foreach ($cursor as $doc) {
+            if (!is_array($doc)) { continue; }
+            if (($doc['status'] ?? null) === 'open') {
+                $doc['status'] = 'pending';
+            }
+
             $items[] = $doc;
         }
 
         return $items;
     }
 
+    public function countPendingTripIncidents(): int
+    {
+        $collection = $this->getCollection();
+
+        return $collection->countDocuments([
+            'type' => 'trip_incident',
+            'status' => ['$in' => ['pending', 'open']],
+        ]);
+    }
+
     public function updateByOid(string $oid, callable $mutator): void
     {
-        $all = $this->readAll();
-        $found = false;
-        foreach ($all as $i => $doc) {
-            if ($this->getOid($doc) !== $oid) { continue; }
-            $mutator($all[$i]);
-            $found = true;
-            break;
-        }
+        $collection = $this->getCollection();
+        $objectId = $this->toObjectId($oid);
 
-        if (!$found) {
+        $doc = $collection->findOne(
+            ['_id' => $objectId],
+            ['typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array']]
+        );
+
+        if (!is_array($doc)) {
             throw new RuntimeException('Incident introuvable.');
         }
 
-        $this->writeAll($all);
+        $mutator($doc);
+
+        unset($doc['_id']);
+
+        $collection->updateOne(
+            ['_id' => $objectId],
+            ['$set' => $doc]
+        );
     }
 
     public function getOid(array $doc): string
     {
         $id = $doc['_id'] ?? null;
+
+        if ($id instanceof ObjectId) {
+            return (string)$id;
+        }
 
         if (is_string($id) && $id !== '') {
             return $id;
@@ -59,27 +94,21 @@ final class IncidentRepository
         return '';
     }
 
-    private function readAll(): array
+    private function getCollection()
     {
-        if (!is_file($this->filePath)) {
-            return [];
-        }
-
-        $raw = (string)file_get_contents($this->filePath);
-        $data = json_decode($raw, true);
-
-        return is_array($data) ? $data : [];
+        $db = MongoConnection::getDatabase();
+        return $db->selectCollection($this->collectionName);
     }
 
-    private function writeAll(array $docs): void
+    private function toObjectId(string $oid): ObjectId
     {
-        $json = json_encode($docs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $oid = trim($oid);
 
-        if ($json === false) {
-            throw new RuntimeException('Impossible d’encoder le JSON.');
+        if (!preg_match('/^[a-f0-9]{24}$/i', $oid)) {
+            throw new RuntimeException('Identifiant MongoDB invalide.');
         }
 
-        file_put_contents($this->filePath, $json);
+        return new ObjectId($oid);
     }
 
     public function countPendingTechnicalReports(): int

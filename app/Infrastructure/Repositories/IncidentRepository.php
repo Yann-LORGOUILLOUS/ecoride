@@ -120,4 +120,44 @@ final class IncidentRepository
             'status' => ['$in' => ['pending', 'open']],
         ]);
     }
+
+    public function findPendingAppIssues(): array
+    {
+        $collection = $this->getCollection();
+
+        $cursor = $collection->find(
+            [
+                'type' => 'app_issue',
+                'status' => ['$in' => ['pending', 'open']],
+            ],
+            [
+                'sort' => ['created_at' => -1],
+                'typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array'],
+            ]
+        );
+
+        $items = [];
+        foreach ($cursor as $doc) {
+            if (!is_array($doc)) { continue; }
+            if (($doc['status'] ?? null) === 'open') {
+                $doc['status'] = 'pending';
+            }
+            $items[] = $doc;
+        }
+
+        return $items;
+    }
+
+    public function closeAppIssue(string $oid, int $adminUserId, string $decision = 'validated', ?string $reason = null): void
+    {
+        $this->updateByOid($oid, function (&$doc) use ($adminUserId, $decision, $reason) {
+            $doc['status'] = 'resolved';
+
+            $doc['moderation'] ??= [];
+            $doc['moderation']['handled_by_employee_id'] = $adminUserId;
+            $doc['moderation']['handled_at'] = gmdate('c');
+            $doc['moderation']['decision'] = $decision;
+            $doc['moderation']['decision_reason'] = $reason;
+        });
+    }
 }

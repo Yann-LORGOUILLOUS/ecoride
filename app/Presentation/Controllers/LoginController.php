@@ -106,6 +106,11 @@ final class LoginController extends BaseController
             exit;
         }
 
+        if ($role === 'admin') {
+            header('Location: ' . BASE_URL . '/dashboard-administrateur');
+            exit;
+        }
+
         header('Location: ' . BASE_URL . '/mon-compte');
         exit;
     }

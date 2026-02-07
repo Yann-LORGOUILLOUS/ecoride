@@ -82,5 +82,14 @@ final class UserRepository
         ');
         $stmt->execute(['id' => $userId]);
     }
+    
+    public function countAll(): int
+    {
+        $pdo = PdoConnection::get();
 
+        $stmt = $pdo->query('SELECT COUNT(*) AS cnt FROM users');
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (int)($row['cnt'] ?? 0);
+    }
 }

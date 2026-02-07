@@ -39,8 +39,14 @@
             $isConnected = isset($_SESSION['user']);
             $userPseudo = $isConnected ? (string)$_SESSION['user']['pseudo'] : null;
 
-            $isEmployee = $isConnected && (($_SESSION['user']['role'] ?? null) === 'employee');
-            $accountUrl = $isEmployee ? (BASE_URL . '/dashboard-moderateur') : (BASE_URL . '/mon-compte');
+            $role = $isConnected ? (string)($_SESSION['user']['role'] ?? '') : '';
+            if ($role === 'employee') {
+              $accountUrl = BASE_URL . '/dashboard-moderateur';
+            } elseif ($role === 'admin') {
+              $accountUrl = BASE_URL . '/dashboard-administrateur';
+            } else {
+              $accountUrl = BASE_URL . '/mon-compte';
+            }
           ?>
 
           <?php if (!$isConnected): ?>

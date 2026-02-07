@@ -81,4 +81,14 @@ final class IncidentRepository
 
         file_put_contents($this->filePath, $json);
     }
+
+    public function countPendingTechnicalReports(): int
+    {
+        $collection = $this->getCollection();
+
+        return $collection->countDocuments([
+            'type' => 'app_issue',
+            'status' => ['$in' => ['pending', 'open']],
+        ]);
+    }
 }

@@ -252,4 +252,40 @@ final class UserRepository
             'id' => $userId,
         ]);
     }
+
+    public function findPublicById(int $id): ?array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            SELECT id, pseudo, avatar_url
+            FROM users
+            WHERE id = :id AND suspended = 0
+            LIMIT 1
+        ');
+        $stmt->execute(['id' => $id]);
+
+        $row = $stmt->fetch();
+        return is_array($row) ? $row : null;
+    }
+
+    public function searchPublicByPseudo(string $q, int $limit = 12): array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare('
+            SELECT id, pseudo, avatar_url
+            FROM users
+            WHERE suspended = 0
+            AND pseudo LIKE :q
+            ORDER BY pseudo ASC
+            LIMIT :limit
+        ');
+        $stmt->bindValue(':q', '%' . $q . '%', PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return is_array($rows) ? $rows : [];
+    }
 }

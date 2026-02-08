@@ -365,4 +365,30 @@ final class TripRepository
 
         return is_array($row) ? $row : null;
     }
+
+    public function findFinishedByDriverId(int $driverId, int $limit = 10): array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            SELECT
+                id,
+                city_from,
+                city_to,
+                departure_datetime,
+                arrival_datetime,
+                price_credits
+            FROM trips
+            WHERE driver_id = :driver_id
+            AND status = 'finished'
+            ORDER BY departure_datetime DESC
+            LIMIT :limit
+        ");
+
+        $stmt->bindValue(':driver_id', $driverId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
 }

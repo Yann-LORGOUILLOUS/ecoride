@@ -290,4 +290,33 @@ final class ReservationRepository
             throw new RuntimeException($e->getMessage());
         }
     }
+
+    public function findFinishedTripsAsPassenger(int $userId, int $limit = 10): array
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            SELECT
+                t.id AS trip_id,
+                t.city_from,
+                t.city_to,
+                t.departure_datetime,
+                t.arrival_datetime,
+                u.pseudo AS driver_pseudo
+            FROM reservations r
+            INNER JOIN trips t ON t.id = r.trip_id
+            INNER JOIN users u ON u.id = t.driver_id
+            WHERE r.user_id = :user_id
+            AND r.status = 'confirmed'
+            AND t.status = 'finished'
+            ORDER BY t.departure_datetime DESC
+            LIMIT :limit
+        ");
+
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
 }

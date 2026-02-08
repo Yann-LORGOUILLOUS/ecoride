@@ -71,6 +71,28 @@
       </div>
     </div>
 
+    <div class="col-12 col-lg-4">
+      <div class="card h-100 rounded-4 shadow-sm border-0">
+        <div class="card-body p-4 d-flex flex-column">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h2 class="h5 fw-bold mb-0">Messages de contact</h2>
+            <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">
+              <?= (int)($newContactMessagesCount ?? 0) ?>
+            </span>
+          </div>
+
+          <p class="text-secondary mb-4">
+            Consulter les messages envoyés depuis la page Contact (suivi et archivage).
+          </p>
+
+          <a class="btn btn-ecoride-primary fw-bold mt-auto"
+            href="<?= BASE_URL ?>/gestion-messages-contact">
+            Voir les messages
+          </a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 

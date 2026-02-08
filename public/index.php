@@ -36,6 +36,7 @@ require_once __DIR__ . '/../app/Presentation/Controllers/AdminDashboardControlle
 require_once __DIR__ . '/../app/Presentation/Controllers/AdminUsersManagementController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/AdminStatsController.php';
 require_once __DIR__ . '/../app/Presentation/Controllers/AdminAppIssuesManagementController.php';
+require_once __DIR__ . '/../app/Presentation/Controllers/AdminContactMessagesController.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
 $scriptDir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
@@ -161,6 +162,10 @@ if ($route === '/'){
 } else if ($route === '/gestion-signalements-techniques'){
     $controller = new AdminAppIssuesManagementController();
     $controller->adminAppIssuesManagement();
+    exit;
+} else if ($route === '/gestion-messages-contact'){
+    $controller = new AdminContactMessagesController();
+    $controller->adminContactMessages();
     exit;
 } else {
     http_response_code(404);

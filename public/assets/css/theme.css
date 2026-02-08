@@ -20,6 +20,10 @@ input, select, textarea, button {
   font-family: inherit;
 }
 
+.bg-ecoride-primary {
+  background-color: var(--ecoride-primary) !important;
+}
+
 .bg-ecoride-secondary {
   background-color: var(--ecoride-background) !important;
 }

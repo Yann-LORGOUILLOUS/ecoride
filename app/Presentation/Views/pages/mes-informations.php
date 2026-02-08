@@ -16,8 +16,11 @@ $avatarUrl = (string)($user['avatar_url'] ?? '');
 <div class="container-xxl px-3 py-4">
 
   <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
-    <h1 class="fw-bold mb-0">MES INFORMATIONS</h1>
-    <a class="btn btn-light border fw-semibold" href="<?= BASE_URL ?>/mon-compte">Retour dashboard</a>
+    <div>
+      <div class="text-secondary small">MON COMPTE</div>
+      <h1 class="fw-bold mb-0">MES INFORMATIONS</h1>
+    </div>
+    <a class="btn btn-light border fw-semibold" href="<?= BASE_URL ?>/mon-compte">← Retour sur mon compte</a>
   </div>
 
   <?php if (is_array($flash) && ($flash['message'] ?? '') !== ''): ?>

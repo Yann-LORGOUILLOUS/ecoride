@@ -37,10 +37,15 @@ final class ReviewRepository
         $sql = "
             SELECT
                 r.id,
-                r.rating,
-                r.comment,
-                r.created_at,
-                u.pseudo AS author_pseudo
+            r.trip_id,
+            r.rating,
+            r.comment,
+            r.created_at,
+            u.pseudo AS author_pseudo,
+            t.city_from,
+            t.city_to,
+            t.departure_datetime,
+            t.arrival_datetime
             FROM reviews r
             INNER JOIN trips t ON t.id = r.trip_id
             INNER JOIN users u ON u.id = r.author_id

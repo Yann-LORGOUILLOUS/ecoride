@@ -14,7 +14,7 @@ $redirect = $redirect ?? '';
       <div class="text-secondary small">MON COMPTE</div>
       <h1 class="fw-bold mb-0">MES VÉHICULES</h1>
     </div>
-    <a class="btn btn-light border fw-semibold" href="<?= BASE_URL ?>/mon-compte">← Retour au menu</a>
+    <a class="btn btn-light border fw-semibold" href="<?= BASE_URL ?>/mon-compte">← Retour sur mon compte</a>
   </div>
 
   <?php if (is_array($flash) && ($flash['message'] ?? '') !== ''): ?>

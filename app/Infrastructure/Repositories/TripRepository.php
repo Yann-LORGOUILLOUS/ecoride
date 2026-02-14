@@ -14,7 +14,7 @@ final class TripRepository
     ): array {
         $pdo = PdoConnection::get();
 
-        $whereSql = " WHERE t.status = 'planned' AND t.seats_available >= 1 AND t.price_credits >= 1 ";
+        $whereSql = " WHERE t.status = 'planned' AND t.seats_available >= 1 AND t.price_credits >= 3 ";
         $params = [];
 
         if ($cityFrom !== null && $cityFrom !== '') {
@@ -206,16 +206,31 @@ final class TripRepository
         $pdo = PdoConnection::get();
 
         if ($status === 'planned') {
-            if ($priceCredits === null || $priceCredits < 1) {
-                throw new InvalidArgumentException('Price required to plan a trip.');
+
+            $check = $pdo->prepare("
+                SELECT price_credits
+                FROM trips
+                WHERE id = :id AND status = 'pending'
+                LIMIT 1
+            ");
+            $check->execute(['id' => $tripId]);
+            $row = $check->fetch(PDO::FETCH_ASSOC);
+
+            if ($row === false) {
+                throw new InvalidArgumentException('Trip not found or not pending.');
+            }
+
+            $currentPrice = (int)$row['price_credits'];
+            if ($currentPrice < 3) {
+                throw new InvalidArgumentException('Trip price must be at least 3 credits.');
             }
 
             $stmt = $pdo->prepare("
                 UPDATE trips
-                SET status = 'planned', price_credits = :price
+                SET status = 'planned'
                 WHERE id = :id AND status = 'pending'
             ");
-            $stmt->execute(['price' => $priceCredits, 'id' => $tripId]);
+            $stmt->execute(['id' => $tripId]);
             return;
         }
 

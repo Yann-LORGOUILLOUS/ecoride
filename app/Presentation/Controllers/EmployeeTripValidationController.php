@@ -57,28 +57,24 @@ final class EmployeeTripValidationController extends BaseController
             $action = (string)($_POST['action'] ?? '');
 
             if ($action === 'approve') {
-                $priceCredits = filter_input(INPUT_POST, 'price_credits', FILTER_VALIDATE_INT, [
-                    'options' => ['min_range' => 1],
-                ]);
 
-                if (!is_int($priceCredits)) {
+                try {
+                    $tripRepo->moderateTrip($tripId, 'planned', null);
+
+                    $_SESSION['flash'] = [
+                        'type' => 'success',
+                        'message' => 'Trajet validé.',
+                    ];
+                    header('Location: ' . BASE_URL . '/dashboard-employe-trajets');
+                    exit;
+                } catch (InvalidArgumentException $e) {
                     $_SESSION['flash'] = [
                         'type' => 'danger',
-                        'message' => 'Le coût en crédits doit être renseigné (minimum 1) pour valider.',
+                        'message' => 'Impossible de valider ce trajet : ' . $e->getMessage(),
                     ];
                     header('Location: ' . BASE_URL . '/valider-trajet?trip_id=' . $tripId);
                     exit;
                 }
-
-                $tripRepo->moderateTrip($tripId, 'planned', $priceCredits);
-
-                $_SESSION['flash'] = [
-                    'type' => 'success',
-                    'message' => 'Trajet validé : il est maintenant publié et réservable.',
-                ];
-
-                header('Location: ' . BASE_URL . '/liste-trajets-a-valider');
-                exit;
             }
 
             if ($action === 'reject') {

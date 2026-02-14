@@ -226,27 +226,11 @@ $tripId = (int)($trip['id'] ?? 0);
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
         <input type="hidden" name="action" value="approve">
 
-        <div class="bg-ecoride-background rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2">
-          <span>Saisir coût du trajet :</span>
-          <input
-            id="priceCreditsInput"
-            name="price_credits"
-            type="number"
-            min="1"
-            step="1"
-            inputmode="numeric"
-            class="form-control form-control-sm text-center"
-            style="width: 90px;"
-            required
-          >
-          <span>crédits</span>
-        </div>
-
         <button
           id="validateTripBtn"
           type="submit"
           class="btn btn-ecoride-primary btn-lg rounded-pill fw-bold px-5"
-          disabled>
+          >
           VALIDER CE TRAJET
         </button>
 
@@ -257,9 +241,6 @@ $tripId = (int)($trip['id'] ?? 0);
             REFUSER CE TRAJET
         </button>
 
-        <div id="priceHint" class="text-secondary fst-italic">
-          Le coût en crédit doit être renseigné pour valider
-        </div>
       </form>
 
     <div class="modal fade" id="rejectTripModal" tabindex="-1" aria-hidden="true">
@@ -310,23 +291,5 @@ $tripId = (int)($trip['id'] ?? 0);
   </div>
 
 </div>
-
-<script>
-(function () {
-  const input = document.getElementById('priceCreditsInput');
-  const btn = document.getElementById('validateTripBtn');
-  const hint = document.getElementById('priceHint');
-
-  const sync = () => {
-    const v = Number(input.value);
-    const ok = Number.isInteger(v) && v >= 1;
-    btn.disabled = !ok;
-    hint.style.display = ok ? 'none' : 'block';
-  };
-
-  input.addEventListener('input', sync);
-  sync();
-})();
-</script>
 
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

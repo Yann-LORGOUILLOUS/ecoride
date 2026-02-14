@@ -62,6 +62,7 @@ final class CreateRideController extends BaseController
         $petsAllowed = isset($_POST['pets_allowed']) ? 1 : 0;
         $driverNotes = trim((string)($_POST['driver_notes'] ?? ''));
         $driverNotes = $driverNotes === '' ? null : $driverNotes;
+        $priceCredits = filter_input(INPUT_POST, 'price_credits', FILTER_VALIDATE_INT, ['options' => ['min_range' => 3]]);
 
         $old = [
             'city_from' => $cityFrom,
@@ -73,9 +74,10 @@ final class CreateRideController extends BaseController
             'smoking_allowed' => $smokingAllowed,
             'pets_allowed' => $petsAllowed,
             'driver_notes' => $driverNotes ?? '',
+            'price_credits' => is_int($priceCredits) ? $priceCredits : '',
         ];
 
-        if ($cityFrom === '' || $cityTo === '' || !is_int($vehiculeId) || !is_int($seats)) {
+        if ($cityFrom === '' || $cityTo === '' || !is_int($vehiculeId) || !is_int($seats) || !is_int($priceCredits)) {
             $this->renderFormError('Merci de remplir tous les champs obligatoires.', $userId, $old);
             return;
         }
@@ -123,7 +125,7 @@ final class CreateRideController extends BaseController
             'city_to' => $cityTo,
             'departure_datetime' => date('Y-m-d H:i:s', $depTs),
             'arrival_datetime' => date('Y-m-d H:i:s', $arrTs),
-            'price_credits' => 0,
+            'price_credits' => $priceCredits,
             'seats_available' => $seats,
             'smoking_allowed' => $smokingAllowed,
             'pets_allowed' => $petsAllowed,

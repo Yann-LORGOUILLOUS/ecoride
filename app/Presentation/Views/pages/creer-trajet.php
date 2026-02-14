@@ -117,6 +117,26 @@
                     </label>
                 </div>
             </div>
+
+        <hr class="my-4">
+
+        <div class="row g-3 align-items-center mb-4">
+            <div class="col-md-4 fw-semibold text-secondary">
+                Prix en crédits :
+            </div>
+            <div class="col-md-8">
+                <input
+                type="number"
+                class="form-control rounded-pill"
+                id="price_credits"
+                name="price_credits"
+                min="3"
+                step="1"
+                required
+                value="<?= htmlspecialchars((string)($old['price_credits'] ?? '')) ?>"
+            >
+            </div>
+            <p class="text-muted small mt-2">La plateforme prélève 2 crédits par réservation (inclus dans ce prix).</p>
         </div>
 
         <hr class="my-4">

@@ -13,7 +13,7 @@ final class UsersPublicInfosController extends BaseController
         $userRepo = new UserRepository();
 
         $q = trim((string)($_GET['q'] ?? ''));
-        $userId = (int)($_GET['userId'] ?? 0);
+        $userId = (int)($_GET['userId'] ?? ($_GET['id'] ?? 0));
 
         $searchResults = [];
         $profile = null;

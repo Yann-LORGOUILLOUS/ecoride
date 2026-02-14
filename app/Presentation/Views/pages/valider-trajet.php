@@ -140,7 +140,7 @@ $tripId = (int)($trip['id'] ?? 0);
                   </div>
 
                   <a class="btn btn-ecoride-primary rounded-pill px-4"
-                     href="<?= BASE_URL ?>/profils?id=<?= (int)($trip['driver_id'] ?? 0) ?>#avis">
+                     href="<?= BASE_URL ?>/profils?userId=<?= (int)($trip['driver_id'] ?? 0) ?>#avis">
                     Voir les avis
                   </a>
                 </div>

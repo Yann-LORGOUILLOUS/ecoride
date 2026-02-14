@@ -219,6 +219,16 @@ final class UserInfosController extends BaseController
             exit;
         }
 
+        $trip = $tripRepo->findDetailsById($tripId);
+        if ($trip !== null) {
+            require_once __DIR__ . '/../../Infrastructure/Repositories/ReservationRepository.php';
+            $reservationRepo = new ReservationRepository();
+            $reservationRepo->refundAllConfirmedForTrip(
+                $tripId,
+                (int)$trip['price_credits']
+            );
+        }
+
         $this->notifyPassengers($tripRepo, $tripId, 'ANNULATION', $trip);
 
         $this->flash('success', 'Trajet annulé. Les passagers ont été notifiés.');
@@ -279,6 +289,14 @@ final class UserInfosController extends BaseController
         $ok = $tripRepo->updateStatusForDriver($tripId, $userId, 'ongoing', 'finished');
         if (!$ok) {
             $this->flash('danger', 'Impossible de clôturer ce trajet (statut non autorisé).');
+            header('Location: ' . BASE_URL . '/mes-informations');
+            exit;
+        }
+
+        try {
+            $tripRepo->settleTripCreditsOnFinish($tripId, $userId);
+        } catch (RuntimeException $e) {
+            $this->flash('danger', 'Trajet clôturé, mais paiement impossible : ' . $e->getMessage());
             header('Location: ' . BASE_URL . '/mes-informations');
             exit;
         }

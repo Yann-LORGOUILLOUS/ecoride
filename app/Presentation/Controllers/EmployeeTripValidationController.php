@@ -90,6 +90,16 @@ final class EmployeeTripValidationController extends BaseController
 
                 $tripRepo->moderateTrip($tripId, 'cancelled', null);
 
+                $trip = $tripRepo->findDetailsById($tripId);
+                if ($trip !== null) {
+                    require_once __DIR__ . '/../../Infrastructure/Repositories/ReservationRepository.php';
+                    $reservationRepo = new ReservationRepository();
+                    $reservationRepo->refundAllConfirmedForTrip(
+                        $tripId,
+                        (int)$trip['price_credits']
+                    );
+                }
+
                 $to = (string)($trip['driver_email'] ?? '');
                 $driverPseudo = (string)($trip['driver_pseudo'] ?? '');
                 $fromCity = (string)($trip['city_from'] ?? '');

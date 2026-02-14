@@ -319,4 +319,81 @@ final class ReservationRepository
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
+
+    public function refundAllConfirmedForTrip(int $tripId, int $priceCredits): void
+    {
+        $pdo = PdoConnection::get();
+
+        try {
+            $pdo->beginTransaction();
+
+            $stmt = $pdo->prepare("
+                SELECT r.id, r.user_id
+                FROM reservations r
+                WHERE r.trip_id = :trip_id
+                AND r.status = 'confirmed'
+                FOR UPDATE
+            ");
+            $stmt->execute(['trip_id' => $tripId]);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (!$rows) {
+                $pdo->commit();
+                return;
+            }
+
+            foreach ($rows as $r) {
+                $reservationId = (int)$r['id'];
+                $userId = (int)$r['user_id'];
+
+                $already = $pdo->prepare("
+                    SELECT 1
+                    FROM credits_transactions
+                    WHERE user_id = :user_id
+                    AND reservation_id = :reservation_id
+                    AND type = 'reservation_refund'
+                    LIMIT 1
+                ");
+                $already->execute([
+                    'user_id' => $userId,
+                    'reservation_id' => $reservationId,
+                ]);
+
+                if ($already->fetchColumn()) {
+                    continue;
+                }
+
+                $upd = $pdo->prepare("
+                    UPDATE users
+                    SET credits = credits + :amount
+                    WHERE id = :user_id
+                    LIMIT 1
+                ");
+                $upd->execute([
+                    'amount' => $priceCredits,
+                    'user_id' => $userId,
+                ]);
+
+                $ins = $pdo->prepare("
+                    INSERT INTO credits_transactions (user_id, trip_id, reservation_id, type, amount, comment)
+                    VALUES (:user_id, :trip_id, :reservation_id, :type, :amount, :comment)
+                ");
+                $ins->execute([
+                    'user_id' => $userId,
+                    'trip_id' => $tripId,
+                    'reservation_id' => $reservationId,
+                    'type' => 'reservation_refund',
+                    'amount' => $priceCredits,
+                    'comment' => 'Remboursement (trajet annulé)',
+                ]);
+            }
+
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw new RuntimeException($e->getMessage());
+        }
+    }
 }

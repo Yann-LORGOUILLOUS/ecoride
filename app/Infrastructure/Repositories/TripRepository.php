@@ -4,6 +4,9 @@ require_once __DIR__ . '/../Database/PdoConnection.php';
 
 final class TripRepository
 {
+    private const PLATFORM_USER_ID = 1;
+    private const PLATFORM_FEE_CREDITS = 2;
+    
     public function searchPaginated(
         ?string $cityFrom,
         ?string $cityTo,
@@ -237,7 +240,7 @@ final class TripRepository
         $stmt = $pdo->prepare("
             UPDATE trips
             SET status = 'cancelled'
-            WHERE id = :id AND status = 'pending'
+            WHERE id = :id AND status IN ('pending', 'planned')
         ");
         $stmt->execute(['id' => $tripId]);
     }
@@ -405,5 +408,132 @@ final class TripRepository
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    public function settleTripCreditsOnFinish(int $tripId, int $driverId): void
+    {
+        $pdo = PdoConnection::get();
+
+        try {
+            $pdo->beginTransaction();
+
+            $tripStmt = $pdo->prepare("
+                SELECT id, driver_id, price_credits, status
+                FROM trips
+                WHERE id = :trip_id
+                FOR UPDATE
+            ");
+            $tripStmt->execute(['trip_id' => $tripId]);
+            $trip = $tripStmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!is_array($trip)) {
+                throw new RuntimeException('Trajet introuvable.');
+            }
+
+            if ((int)$trip['driver_id'] !== $driverId) {
+                throw new RuntimeException('Action non autorisée.');
+            }
+
+            if ((string)$trip['status'] !== 'finished') {
+                throw new RuntimeException('Le trajet doit être clôturé pour déclencher le paiement.');
+            }
+
+            $price = (int)$trip['price_credits'];
+            if ($price < 3) {
+                throw new RuntimeException('Prix invalide : paiement impossible.');
+            }
+
+            $alreadyStmt = $pdo->prepare("
+                SELECT 1
+                FROM credits_transactions
+                WHERE trip_id = :trip_id
+                AND type IN ('driver_payout', 'platform_fee')
+                LIMIT 1
+            ");
+            $alreadyStmt->execute(['trip_id' => $tripId]);
+            if ($alreadyStmt->fetchColumn()) {
+                $pdo->commit();
+                return;
+            }
+
+            $countStmt = $pdo->prepare("
+                SELECT COUNT(*) 
+                FROM reservations
+                WHERE trip_id = :trip_id
+                AND status = 'confirmed'
+            ");
+            $countStmt->execute(['trip_id' => $tripId]);
+            $confirmed = (int)$countStmt->fetchColumn();
+
+            if ($confirmed <= 0) {
+                $pdo->commit();
+                return;
+            }
+
+            $netPerSeat = $price - self::PLATFORM_FEE_CREDITS;
+            if ($netPerSeat < 0) {
+                $netPerSeat = 0;
+            }
+
+            $driverGain = $netPerSeat * $confirmed;
+            $platformGain = self::PLATFORM_FEE_CREDITS * $confirmed;
+
+            if ($driverGain > 0) {
+                $updDriver = $pdo->prepare("
+                    UPDATE users
+                    SET credits = credits + :amount
+                    WHERE id = :user_id
+                    LIMIT 1
+                ");
+                $updDriver->execute([
+                    'amount' => $driverGain,
+                    'user_id' => $driverId,
+                ]);
+
+                $insDriverTx = $pdo->prepare("
+                    INSERT INTO credits_transactions (user_id, trip_id, type, amount, comment)
+                    VALUES (:user_id, :trip_id, :type, :amount, :comment)
+                ");
+                $insDriverTx->execute([
+                    'user_id' => $driverId,
+                    'trip_id' => $tripId,
+                    'type' => 'driver_payout',
+                    'amount' => $driverGain,
+                    'comment' => 'Paiement conducteur (trajet terminé)',
+                ]);
+            }
+
+            if ($platformGain > 0) {
+                $updPlatform = $pdo->prepare("
+                    UPDATE users
+                    SET credits = credits + :amount
+                    WHERE id = :user_id
+                    LIMIT 1
+                ");
+                $updPlatform->execute([
+                    'amount' => $platformGain,
+                    'user_id' => self::PLATFORM_USER_ID,
+                ]);
+
+                $insPlatformTx = $pdo->prepare("
+                    INSERT INTO credits_transactions (user_id, trip_id, type, amount, comment)
+                    VALUES (:user_id, :trip_id, :type, :amount, :comment)
+                ");
+                $insPlatformTx->execute([
+                    'user_id' => self::PLATFORM_USER_ID,
+                    'trip_id' => $tripId,
+                    'type' => 'platform_fee',
+                    'amount' => $platformGain,
+                    'comment' => 'Taxe plateforme (2 crédits / réservation)',
+                ]);
+            }
+
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw new RuntimeException($e->getMessage());
+        }
     }
 }

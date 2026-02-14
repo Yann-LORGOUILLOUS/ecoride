@@ -1,13 +1,14 @@
-:root{
+:root {
   --ecoride-primary: #2E7D32;
   --ecoride-secondary: #37474F;
   --ecoride-background: #F5F5F5;
   --ecoride-font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-html, body {
-  font-family: var(--ecoride-font) !important;
+html,
+body {
   height: 100%;
+  font-family: var(--ecoride-font);
 }
 
 body {
@@ -16,7 +17,12 @@ body {
   flex-direction: column;
 }
 
-input, select, textarea, button {
+input,
+select,
+textarea,
+button,
+.form-control,
+.btn {
   font-family: inherit;
 }
 
@@ -28,9 +34,8 @@ input, select, textarea, button {
   background-color: var(--ecoride-background) !important;
 }
 
-.form-control,
-.btn {
-  font-family: var(--ecoride-font);
+.text-secondary {
+  color: var(--ecoride-secondary) !important;
 }
 
 .form-control-lg,
@@ -39,45 +44,24 @@ input, select, textarea, button {
   line-height: 1.2;
 }
 
-.btn-ecoride-primary{
+.btn-ecoride-primary {
   --bs-btn-bg: var(--ecoride-primary);
   --bs-btn-border-color: var(--ecoride-primary);
   --bs-btn-color: #fff;
   --bs-btn-hover-bg: #276b2b;
   --bs-btn-hover-border-color: #276b2b;
-  --bs-btn-padding-y: .5rem;
-  --bs-btn-padding-x: .9rem;
-  --bs-btn-border-radius: .75rem;
-}
-
-.text-secondary{
-  color: var(--ecoride-secondary) !important;
-}
-
-.btn-prev,
-.btn-next {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: none;
-  background-color: var(--ecoride-primary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.btn-prev:hover,
-.btn-next:hover {
-  filter: brightness(0.9);
+  --bs-btn-padding-y: 0.5rem;
+  --bs-btn-padding-x: 0.9rem;
+  --bs-btn-border-radius: 0.75rem;
 }
 
 .review-circle {
   width: 220px;
   height: 220px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.1);
-  box-shadow: 0 .25rem .75rem rgba(0,0,0,0.08);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -85,12 +69,89 @@ input, select, textarea, button {
   text-align: center;
   padding: 16px;
 }
-.review-text {
-  font-size: 14px;
-  margin-bottom: 8px;
-}
+
+.review-text,
 .review-meta {
   font-size: 14px;
+}
+
+.review-text {
+  margin-bottom: 8px;
+}
+
+.review-meta {
   color: var(--ecoride-secondary);
   margin: 0;
 }
+
+#carouselExample {
+  overflow: hidden;
+}
+
+#carouselExample .carousel-inner {
+  padding: 0 56px;
+}
+
+#carouselExample .carousel-control-prev,
+#carouselExample .carousel-control-next {
+  width: 56px;
+  opacity: 1;
+}
+
+#carouselExample .carousel-control-prev,
+#carouselExample .carousel-control-next {
+  width: 56px;
+  opacity: 1;
+}
+
+#carouselExample .carousel-control-prev-icon,
+#carouselExample .carousel-control-next-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background-color: var(--ecoride-primary);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+}
+
+#carouselExample .carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15 6L9 12L15 18' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+#carouselExample .carousel-control-next-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 6L15 12L9 18' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 575.98px) {
+  #carouselExample .carousel-inner {
+    padding: 0 52px;
+  }
+
+  .review-circle {
+    width: min(280px, 86vw);
+    height: min(280px, 86vw);
+  }
+
+  .review-text,
+  .review-meta {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  #mainNavbar .navbar-nav {
+    gap: 10px;
+  }
+
+  #mainNavbar .nav-item {
+    display: flex;
+    justify-content: center;
+  }
+
+  #mainNavbar .nav-item .btn,
+  #mainNavbar .nav-item .nav-link {
+    text-align: center;
+  }
+}
+

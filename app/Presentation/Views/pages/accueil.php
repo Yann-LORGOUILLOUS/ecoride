@@ -89,129 +89,86 @@
 
   <div class="container">
     <div class="row align-items-center">
-      <div class="col-1 d-flex align-items-center justify-content-center">
-        <button class="btn-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+      <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+
+          <div class="carousel-item active">
+            <div class="row p-3 g-3 justify-content-center">
+              <div class="col-12 col-md-4">
+                <div class="review-circle mx-auto">
+                  <p class="review-text">“Application très intuitive, j’ai réservé mon covoiturage en quelques clics.”</p>
+                  <p class="review-meta"><strong>Camille</strong><br>5/5</p>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="review-circle mx-auto">
+                  <p class="review-text">“Interface claire et agréable, exactement ce qu’il me fallait pour mes trajets quotidiens.”</p>
+                  <p class="review-meta"><strong>Lassina</strong><br>5/5</p>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="review-circle mx-auto">
+                  <p class="review-text">“J’ai trouvé un trajet rapidement, et l’expérience utilisateur est top.”</p>
+                  <p class="review-meta"><strong>Sophie</strong><br>5/5</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="carousel-item">
+            <div class="row p-3 g-3 justify-content-center">
+              <div class="col-12 col-md-4">
+                <div class="review-circle mx-auto">
+                  <p class="review-text">“EcoRide rend le covoiturage simple et accessible, je recommande sans hésiter.”</p>
+                  <p class="review-meta"><strong>Luka</strong><br>5/5</p>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="review-circle mx-auto">
+                  <p class="review-text">“Très bonne surprise, tout est fluide et bien pensé.”</p>
+                  <p class="review-meta"><strong>Élodie</strong><br>4/5</p>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="review-circle mx-auto">
+                  <p class="review-text">“Une plateforme moderne et efficace, parfaite pour organiser mes déplacements.”</p>
+                  <p class="review-meta"><strong>Miljan</strong><br>5/5</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="carousel-item">
+            <div class="row p-3 g-3 justify-content-center">
+              <div class="col-12 col-md-4">
+                <div class="review-circle mx-auto">
+                  <p class="review-text">“Recherche rapide, design agréable et navigation intuitive.”</p>
+                  <p class="review-meta"><strong>Maria</strong><br>5/5</p>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="review-circle mx-auto">
+                  <p class="review-text">“Enfin une application de covoiturage simple à utiliser et bien pensée.”</p>
+                  <p class="review-meta"><strong>Antoine</strong><br>5/5</p>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="review-circle mx-auto">
+                  <p class="review-text">“Tout est clair dès la première utilisation, c’est vraiment agréable.”</p>
+                  <p class="review-meta"><strong>Jaya</strong><br>5/5</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="carousel-control-prev ecoride-carousel-control" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
         </button>
-      </div>
 
-      <div class="col-10">
-        <div id="carouselExample" class="carousel slide">
-          <div class="carousel-inner">
-
-            <div class="carousel-item active">
-              <div class="row p-3 g-3">
-                <div class="col-4">
-                  <div class="review-circle mx-auto">
-                    <p class="review-text">
-                      “Application très intuitive, j’ai réservé mon covoiturage en quelques clics.”
-                    </p>
-                    <p class="review-meta">
-                      <strong>Camille</strong><br>5/5
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="review-circle mx-auto">
-                    <p class="review-text">
-                      “Interface claire et agréable, exactement ce qu’il me fallait pour mes trajets quotidiens.”
-                    </p>
-                    <p class="review-meta">
-                      <strong>Lassina</strong><br>5/5
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="review-circle mx-auto">
-                    <p class="review-text">
-                      “J’ai trouvé un trajet rapidement, et l’expérience utilisateur est top.”
-                    </p>
-                    <p class="review-meta">
-                      <strong>Sophie</strong><br>5/5
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="carousel-item">
-              <div class="row p-3 g-3">
-                <div class="col-4">
-                  <div class="review-circle mx-auto">
-                    <p class="review-text">
-                      “EcoRide rend le covoiturage simple et accessible, je recommande sans hésiter.”
-                    </p>
-                    <p class="review-meta">
-                      <strong>Luka</strong><br>5/5
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="review-circle mx-auto">
-                    <p class="review-text">
-                      “Très bonne surprise, tout est fluide et bien pensé.”
-                    </p>
-                    <p class="review-meta">
-                      <strong>Élodie</strong><br>4/5
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="review-circle mx-auto">
-                    <p class="review-text">
-                      “Une plateforme moderne et efficace, parfaite pour organiser mes déplacements.”
-                    </p>
-                    <p class="review-meta">
-                      <strong>Miljan</strong><br>5/5
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="carousel-item">
-              <div class="row p-3 g-3">
-                <div class="col-4">
-                  <div class="review-circle mx-auto">
-                    <p class="review-text">
-                      “Recherche rapide, design agréable et navigation intuitive.”
-                    </p>
-                    <p class="review-meta">
-                      <strong>Maria</strong><br>5/5
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="review-circle mx-auto">
-                    <p class="review-text">
-                      “Enfin une application de covoiturage simple à utiliser et bien pensée.”
-                    </p>
-                    <p class="review-meta">
-                      <strong>Antoine</strong><br>5/5
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="review-circle mx-auto">
-                    <p class="review-text">
-                      “Tout est clair dès la première utilisation, c’est vraiment agréable.”
-                    </p>
-                    <p class="review-meta">
-                      <strong>Jaya</strong><br>5/5
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-
-          </div>
-        </div>
-      </div>
-
-      <div class="col-1 d-flex align-items-center justify-content-center">
-        <button class="btn-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+        <button class="carousel-control-next ecoride-carousel-control" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
         </button>

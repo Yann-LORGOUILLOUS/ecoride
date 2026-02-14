@@ -147,4 +147,52 @@ final class ReviewRepository
             'id' => $reviewId,
         ]);
     }
+
+    public function existsForTripAndAuthor(int $tripId, int $authorId): bool
+    {
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            SELECT 1
+            FROM reviews
+            WHERE trip_id = :trip_id
+            AND author_id = :author_id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'trip_id' => $tripId,
+            'author_id' => $authorId,
+        ]);
+
+        return (bool)$stmt->fetchColumn();
+    }
+
+    public function createPending(int $tripId, int $authorId, int $rating, string $comment): int
+    {
+        if ($rating < 1 || $rating > 5) {
+            throw new InvalidArgumentException('La note doit être comprise entre 1 et 5.');
+        }
+
+        $comment = trim($comment);
+        if ($comment === '') {
+            throw new InvalidArgumentException('Le commentaire est obligatoire.');
+        }
+
+        $pdo = PdoConnection::get();
+
+        $stmt = $pdo->prepare("
+            INSERT INTO reviews (trip_id, author_id, rating, comment, status)
+            VALUES (:trip_id, :author_id, :rating, :comment, 'pending')
+        ");
+
+        $stmt->execute([
+            'trip_id' => $tripId,
+            'author_id' => $authorId,
+            'rating' => $rating,
+            'comment' => $comment,
+        ]);
+
+        return (int)$pdo->lastInsertId();
+    }
 }

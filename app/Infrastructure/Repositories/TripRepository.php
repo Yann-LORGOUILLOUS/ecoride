@@ -13,7 +13,11 @@ final class TripRepository
         ?string $date,
         string $sort,
         int $limit,
-        int $offset
+        int $offset,
+        ?bool $ecoOnly = null,
+        ?int $maxPrice = null,
+        ?int $maxDurationMinutes = null,
+        ?float $minRating = null
     ): array {
         $pdo = PdoConnection::get();
 
@@ -33,6 +37,31 @@ final class TripRepository
         if ($date !== null && $date !== '') {
             $whereSql .= " AND DATE(t.departure_datetime) = :departure_date";
             $params['departure_date'] = $date;
+        }
+
+        if ($ecoOnly === true) {
+            $whereSql .= " AND v.energy_type = 'electric'";
+        }
+
+        if (is_int($maxPrice) && $maxPrice > 0) {
+            $whereSql .= " AND t.price_credits <= :max_price";
+            $params['max_price'] = $maxPrice;
+        }
+
+        if (is_int($maxDurationMinutes) && $maxDurationMinutes > 0) {
+            $whereSql .= " AND TIMESTAMPDIFF(MINUTE, t.departure_datetime, t.arrival_datetime) <= :max_duration";
+            $params['max_duration'] = $maxDurationMinutes;
+        }
+
+        if (is_float($minRating) && $minRating > 0) {
+            $whereSql .= " AND (
+                SELECT AVG(r.rating)
+                FROM trips t2
+                INNER JOIN reviews r ON r.trip_id = t2.id
+                WHERE t2.driver_id = t.driver_id
+                AND r.status = 'approved'
+            ) >= :min_rating";
+            $params['min_rating'] = $minRating;
         }
 
         $countSql = "
@@ -58,10 +87,24 @@ final class TripRepository
                 t.pets_allowed,
                 t.driver_notes,
                 t.status,
+
                 u.pseudo AS driver_pseudo,
+                u.avatar_url AS driver_avatar_url,
+
                 v.brand AS vehicle_brand,
                 v.model AS vehicle_model,
-                v.energy_type AS vehicle_energy
+                v.energy_type AS vehicle_energy,
+
+                TIMESTAMPDIFF(MINUTE, t.departure_datetime, t.arrival_datetime) AS duration_minutes,
+
+                (
+                    SELECT ROUND(AVG(r.rating), 1)
+                    FROM trips t2
+                    INNER JOIN reviews r ON r.trip_id = t2.id
+                    WHERE t2.driver_id = t.driver_id
+                    AND r.status = 'approved'
+                ) AS driver_rating
+
             FROM trips t
             INNER JOIN users u ON u.id = t.driver_id
             INNER JOIN vehicules v ON v.id = t.vehicule_id
@@ -73,7 +116,9 @@ final class TripRepository
         $dataStmt = $pdo->prepare($dataSql);
 
         foreach ($params as $k => $v) {
-            $dataStmt->bindValue(':' . $k, $v, PDO::PARAM_STR);
+            $type = PDO::PARAM_STR;
+            if (is_int($v)) $type = PDO::PARAM_INT;
+            $dataStmt->bindValue(':' . $k, $v, $type);
         }
 
         $dataStmt->bindValue(':limit', $limit, PDO::PARAM_INT);
@@ -195,8 +240,73 @@ final class TripRepository
             'price_desc' => " ORDER BY t.price_credits DESC, t.departure_datetime ASC",
             'seats_desc' => " ORDER BY t.seats_available DESC, t.departure_datetime ASC",
             'date_desc'  => " ORDER BY t.departure_datetime DESC",
+            'duration_asc' => " ORDER BY TIMESTAMPDIFF(MINUTE, t.departure_datetime, t.arrival_datetime) ASC, t.departure_datetime ASC",
+            'duration_desc'=> " ORDER BY TIMESTAMPDIFF(MINUTE, t.departure_datetime, t.arrival_datetime) DESC, t.departure_datetime ASC",
+            'rating_desc'  => " ORDER BY driver_rating DESC, t.departure_datetime ASC",
             default      => " ORDER BY t.departure_datetime ASC",
         };
+    }
+
+    public function findClosestAvailableDate(
+        string $cityFrom,
+        string $cityTo,
+        string $date,
+        ?bool $ecoOnly = null,
+        ?int $maxPrice = null,
+        ?int $maxDurationMinutes = null,
+        ?float $minRating = null
+    ): ?string {
+        $pdo = PdoConnection::get();
+
+        $whereSql = " WHERE t.status = 'planned' AND t.seats_available >= 1 AND t.city_from LIKE :city_from AND t.city_to LIKE :city_to ";
+        $params = [
+            'city_from' => '%' . $cityFrom . '%',
+            'city_to' => '%' . $cityTo . '%',
+            'ref_date' => $date,
+        ];
+
+        if ($ecoOnly === true) {
+            $whereSql .= " AND v.energy_type = 'electric'";
+        }
+        if (is_int($maxPrice) && $maxPrice > 0) {
+            $whereSql .= " AND t.price_credits <= :max_price";
+            $params['max_price'] = $maxPrice;
+        }
+        if (is_int($maxDurationMinutes) && $maxDurationMinutes > 0) {
+            $whereSql .= " AND TIMESTAMPDIFF(MINUTE, t.departure_datetime, t.arrival_datetime) <= :max_duration";
+            $params['max_duration'] = $maxDurationMinutes;
+        }
+        if (is_float($minRating) && $minRating > 0) {
+            $whereSql .= " AND (
+                SELECT AVG(r.rating)
+                FROM trips t2
+                INNER JOIN reviews r ON r.trip_id = t2.id
+                WHERE t2.driver_id = t.driver_id
+                AND r.status = 'approved'
+            ) >= :min_rating";
+            $params['min_rating'] = $minRating;
+        }
+
+        $sql = "
+            SELECT DATE(t.departure_datetime) AS d
+            FROM trips t
+            INNER JOIN vehicules v ON v.id = t.vehicule_id
+            $whereSql
+            ORDER BY ABS(DATEDIFF(DATE(t.departure_datetime), :ref_date)) ASC, t.departure_datetime ASC
+            LIMIT 1
+        ";
+
+        $stmt = $pdo->prepare($sql);
+
+        foreach ($params as $k => $v) {
+            $type = is_int($v) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $stmt->bindValue(':' . $k, $v, $type);
+        }
+
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return is_array($row) && isset($row['d']) ? (string)$row['d'] : null;
     }
 
     public function moderateTrip(int $tripId, string $status, ?int $priceCredits): void

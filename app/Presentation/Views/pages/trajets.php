@@ -5,53 +5,118 @@
   <?php
     $filters = $filters ?? ['from' => '', 'to' => '', 'date' => '', 'sort' => 'date_asc', 'limit' => 12];
     $searched = $searched ?? false;
-
     $trips = $trips ?? [];
     $currentCount = count($trips);
-
     $totalTrips = isset($totalTrips) ? (int)$totalTrips : $currentCount;
-
     $hasMore = $hasMore ?? false;
     $nextLimit = isset($nextLimit) ? (int)$nextLimit : ((int)($filters['limit'] ?? 12) + 12);
-
     $messageSuffix = $searched ? "trajets correspondent à votre recherche" : "trajets disponibles";
+    $suggestedDate = $suggestedDate ?? null;
   ?>
 
   <section class="mb-4">
     <form class="bg-body rounded-4 p-3 border shadow-sm" method="get" action="<?= BASE_URL ?>/trajets">
       <div class="row g-2 align-items-center">
         <div class="col-12 col-lg">
-          <input
-            class="form-control form-control-lg rounded-pill text-center"
-            name="from"
-            type="text"
-            placeholder="Ville de départ"
-            value="<?= htmlspecialchars((string)($filters['from'] ?? '')) ?>"
-          >
+          <input class="form-control form-control-lg rounded-pill text-center" name="from" type="text"
+                placeholder="Ville de départ"
+                value="<?= htmlspecialchars((string)($filters['from'] ?? '')) ?>">
         </div>
+
         <div class="col-12 col-lg">
-          <input
-            class="form-control form-control-lg rounded-pill text-center"
-            name="to"
-            type="text"
-            placeholder="Ville d'arrivée"
-            value="<?= htmlspecialchars((string)($filters['to'] ?? '')) ?>"
-          >
+          <input class="form-control form-control-lg rounded-pill text-center" name="to" type="text"
+                placeholder="Ville d'arrivée"
+                value="<?= htmlspecialchars((string)($filters['to'] ?? '')) ?>">
         </div>
+
         <div class="col-12 col-lg-3">
-          <input
-            class="form-control form-control-lg rounded-pill text-center"
-            name="date"
-            type="date"
-            value="<?= htmlspecialchars((string)($filters['date'] ?? '')) ?>"
-          >
+          <input class="form-control form-control-lg rounded-pill text-center" name="date" type="date"
+                value="<?= htmlspecialchars((string)($filters['date'] ?? '')) ?>">
         </div>
+
         <div class="col-12 col-lg-auto d-grid">
           <button class="btn btn-ecoride-primary btn-lg rounded-pill fw-bold" type="submit">
             LANCER LA RECHERCHE
           </button>
         </div>
       </div>
+
+      <div class="mt-3 d-flex flex-wrap justify-content-center gap-2">
+
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary rounded-pill px-4 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Trier par
+          </button>
+          <ul class="dropdown-menu">
+            <?php
+              $s = (string)($filters['sort'] ?? 'date_asc');
+              $opts = [
+                'date_asc' => 'Départ (croissant)',
+                'date_desc' => 'Départ (décroissant)',
+                'price_asc' => 'Prix (croissant)',
+                'price_desc' => 'Prix (décroissant)',
+                'duration_asc' => 'Durée (croissante)',
+                'duration_desc' => 'Durée (décroissante)',
+                'rating_desc' => 'Meilleure note',
+                'seats_desc' => 'Places (décroissant)',
+              ];
+            ?>
+            <?php foreach ($opts as $k => $label): ?>
+              <li>
+                <button class="dropdown-item <?= $s === $k ? 'active' : '' ?>" type="submit" name="sort" value="<?= htmlspecialchars($k) ?>">
+                  <?= htmlspecialchars($label) ?>
+                </button>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+
+        <button class="btn btn-outline-secondary rounded-pill px-4" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse" aria-expanded="false" aria-controls="filtersCollapse">
+          Filtres
+        </button>
+
+      </div>
+
+      <div class="collapse mt-3" id="filtersCollapse">
+        <div class="bg-body-tertiary rounded-4 p-3 border">
+
+          <div class="row g-2 align-items-center justify-content-center">
+            <div class="col-12 col-md-3">
+              <input class="form-control rounded-pill text-center" name="max_price" type="number" min="1"
+                    placeholder="Prix max"
+                    value="<?= htmlspecialchars((string)($filters['max_price'] ?? '')) ?>">
+            </div>
+
+            <div class="col-12 col-md-3">
+              <input class="form-control rounded-pill text-center" name="max_duration" type="number" min="1"
+                    placeholder="Durée max (min)"
+                    value="<?= htmlspecialchars((string)($filters['max_duration'] ?? '')) ?>">
+            </div>
+
+            <div class="col-12 col-md-3">
+              <input class="form-control rounded-pill text-center" name="min_rating" type="number" min="1" max="5" step="0.5"
+                    placeholder="Note min"
+                    value="<?= htmlspecialchars((string)($filters['min_rating'] ?? '')) ?>">
+            </div>
+
+            <div class="col-12 col-md-3 d-flex justify-content-center">
+              <?php $ecoChecked = ((string)($filters['eco'] ?? '0') === '1'); ?>
+              <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" role="switch" id="eco" name="eco" value="1" <?= $ecoChecked ? 'checked' : '' ?>>
+                <label class="form-check-label" for="eco">Trajets électriques</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-3">
+            <button class="btn btn-ecoride-primary rounded-pill fw-semibold px-4" type="submit">
+              Appliquer les filtres
+            </button>
+          </div>
+
+        </div>
+      </div>
+
     </form>
   </section>
 
@@ -66,6 +131,15 @@
     </section>
 
   <?php else: ?>
+    <?php if ($searched && !empty($suggestedDate) && !empty($filters['date']) && $suggestedDate !== $filters['date']): ?>
+      <section class="mb-3">
+        <div class="alert alert-info rounded-4">
+          Aucun trajet disponible à la date demandée.
+          Voici les trajets à la date la plus proche :
+          <strong><?= htmlspecialchars((string)$suggestedDate) ?></strong>
+        </div>
+      </section>
+    <?php endif; ?>
     <section class="mb-3">
       <div class="bg-body rounded-pill px-3 py-2 border shadow-sm text-center">
         <span class="fw-bold"><?= $totalTrips ?></span>
@@ -79,17 +153,13 @@
           <?php
             $fromCity = (string)($trip['city_from'] ?? '');
             $toCity = (string)($trip['city_to'] ?? '');
-
             $departure = (string)($trip['departure_datetime'] ?? '');
             $arrival = (string)($trip['arrival_datetime'] ?? '');
-
             $driver = (string)($trip['driver_pseudo'] ?? '');
             $seats = (int)($trip['seats_available'] ?? 0);
             $credits = (int)($trip['price_credits'] ?? 0);
-
             $energy = (string)($trip['vehicle_energy'] ?? '');
             $eco = in_array(strtolower($energy), ['electric', 'hybrid', 'electrique', 'hybride'], true);
-
             $tripId = (int)($trip['id'] ?? 0);
           ?>
 
@@ -148,6 +218,10 @@
             'from'  => (string)($filters['from'] ?? ''),
             'to'    => (string)($filters['to'] ?? ''),
             'date'  => (string)($filters['date'] ?? ''),
+            'eco' => (string)($filters['eco'] ?? '0'),
+            'max_price' => (string)($filters['max_price'] ?? ''),
+            'max_duration' => (string)($filters['max_duration'] ?? ''),
+            'min_rating' => (string)($filters['min_rating'] ?? ''),
             'sort'  => (string)($filters['sort'] ?? 'date_asc'),
             'limit' => (int)$nextLimit,
           ]);

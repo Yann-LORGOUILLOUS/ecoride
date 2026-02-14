@@ -49,6 +49,14 @@ final class SignUpController extends BaseController
         $firstName = trim((string)($_POST['first_name'] ?? ''));
         $email = trim((string)($_POST['email'] ?? ''));
         $password = (string)($_POST['password'] ?? '');
+        $pwdErrors = $this->validatePassword($password);
+        if ($pwdErrors !== []) {
+            $this->renderFormError(
+                'Mot de passe trop faible : ' . implode(' ', $pwdErrors),
+                $old
+            );
+            return;
+        }
         $passwordConfirm = (string)($_POST['password_confirm'] ?? '');
 
         if ($pseudo === '' || $lastName === '' || $firstName === '' || $email === '' || $password === '' || $passwordConfirm === '') {
@@ -132,5 +140,28 @@ final class SignUpController extends BaseController
         if (str_starts_with($path, '//')) return false;
         if (str_contains($path, '://')) return false;
         return true;
+    }
+
+    private function validatePassword(string $password): array
+    {
+        $errors = [];
+
+        if (mb_strlen($password) < 12) {
+            $errors[] = '12 caractères minimum.';
+        }
+        if (!preg_match('/[a-z]/', $password)) {
+            $errors[] = 'Au moins une minuscule.';
+        }
+        if (!preg_match('/[A-Z]/', $password)) {
+            $errors[] = 'Au moins une majuscule.';
+        }
+        if (!preg_match('/\d/', $password)) {
+            $errors[] = 'Au moins un chiffre.';
+        }
+        if (!preg_match('/[^a-zA-Z0-9]/', $password)) {
+            $errors[] = 'Au moins un caractère spécial.';
+        }
+
+        return $errors;
     }
 }

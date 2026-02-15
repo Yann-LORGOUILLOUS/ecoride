@@ -28,15 +28,17 @@ $csrfToken = $csrfToken ?? '';
           <div class="fw-semibold text-dark">EcoRide</div>
           <div>12 rue du développement durable</div>
           <div>77680 Roissy-en-Brie</div>
+          
+          <hr class="my-3">
+
+          <div class="fw-semibold text-dark">Adresse mail de contact</div>
+          <div>ecoride@mail.fr</div>
 
           <hr class="my-3">
 
           <div class="fw-semibold text-dark">Horaires</div>
           <div>Lun–Ven : 9h–18h</div>
 
-          <div class="small mt-3">
-            Vos données sont utilisées uniquement pour répondre à votre demande.
-          </div>
         </div>
       </div>
     </div>

@@ -160,4 +160,38 @@ final class IncidentRepository
             $doc['moderation']['decision_reason'] = $reason;
         });
     }
+
+    public function createAppIssue(int $reporterUserId, string $page, string $subject, string $severity, string $comment): string
+    {
+        $page = trim($page);
+        $subject = trim($subject);
+        $severity = trim($severity);
+        $comment = trim($comment);
+
+        if ($page === '' || $subject === '' || $severity === '' || $comment === '') {
+            throw new InvalidArgumentException('Champs obligatoires manquants.');
+        }
+
+        $allowedSeverities = ['Faible', 'Moyenne', 'Élevée', 'Critique'];
+        if (!in_array($severity, $allowedSeverities, true)) {
+            throw new InvalidArgumentException('Gravité invalide.');
+        }
+
+        $collection = $this->getCollection();
+
+        $doc = [
+            'type' => 'app_issue',
+            'status' => 'pending',
+            'reporter_user_id' => $reporterUserId,
+            'page' => $page,
+            'subject' => $subject,
+            'severity' => $severity,
+            'comment' => $comment,
+            'created_at' => gmdate('c'),
+        ];
+
+        $result = $collection->insertOne($doc);
+
+        return (string)$result->getInsertedId();
+    }
 }

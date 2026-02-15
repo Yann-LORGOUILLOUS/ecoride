@@ -47,7 +47,12 @@ $csrfToken = (string)($csrfToken ?? '');
                   <?= is_array($trip) ? htmlspecialchars((string)($trip['city_to'] ?? '')) : '—' ?>
                 </div>
                 <div class="text-secondary small">
-                  <?= is_array($trip) ? htmlspecialchars((string)($trip['departure_datetime'] ?? '')) : '' ?>
+                  <span class="fw-semibold">Départ :</span>
+                  <?= is_array($trip) ? htmlspecialchars((string)($trip['departure_datetime'] ?? '—')) : '—' ?>
+                </div>
+                <div class="text-secondary small">
+                  <span class="fw-semibold">Arrivée :</span>
+                  <?= is_array($trip) ? htmlspecialchars((string)($trip['arrival_datetime'] ?? '—')) : '—' ?>
                 </div>
               </div>
             </div>
@@ -58,6 +63,9 @@ $csrfToken = (string)($csrfToken ?? '');
                 <div class="fw-semibold">
                   <?= is_array($reporter) ? htmlspecialchars((string)($reporter['pseudo'] ?? '')) : '—' ?>
                 </div>
+                <div class="text-secondary small">
+                  <?= is_array($reporter) ? htmlspecialchars((string)($reporter['email'] ?? '—')) : '—' ?>
+                </div>
                 <div class="text-secondary"><?= htmlspecialchars((string)($it['reporter_trip_role'] ?? '')) ?></div>
               </div>
             </div>
@@ -67,6 +75,9 @@ $csrfToken = (string)($csrfToken ?? '');
                 <div class="fw-bold">DESTINATAIRE :</div>
                 <div class="fw-semibold">
                   <?= is_array($target) ? htmlspecialchars((string)($target['pseudo'] ?? '')) : '—' ?>
+                </div>
+                <div class="text-secondary small">
+                  <?= is_array($target) ? htmlspecialchars((string)($target['email'] ?? '')) : '—' ?>
                 </div>
                 <div class="text-secondary"><?= htmlspecialchars((string)($it['target_trip_role'] ?? '')) ?></div>
               </div>

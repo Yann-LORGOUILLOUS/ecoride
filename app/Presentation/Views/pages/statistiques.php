@@ -20,12 +20,14 @@
 
     <div class="col-12 col-lg-6">
       <div class="p-4 rounded-4 bg-light border text-center h-100">
-        <div class="fw-bold">FLUX DE CREDITS</div>
+        <div class="fw-bold">GAIN PLATEFORME</div>
         <div class="mt-3">
-          <div><span class="fw-semibold"><?= htmlspecialchars((string)$creditsCreatedPerDayAvg) ?></span> crédits créés / jour</div>
-          <div><span class="fw-semibold"><?= (int)$creditsCreatedTotal ?></span> crédits créés au total</div>
-          <div class="mt-2"><span class="fw-semibold"><?= htmlspecialchars((string)$creditsConsumedPerDayAvg) ?></span> crédits consommés / jour</div>
-          <div><span class="fw-semibold"><?= (int)$creditsConsumedTotal ?></span> crédits consommés au total</div>
+          <div>
+            <span class="fw-semibold"><?= htmlspecialchars((string)($platformCreditsPerDayAvg ?? 0)) ?></span> crédits / jour
+          </div>
+          <div class="mt-2">
+            <span class="fw-semibold"><?= (int)($platformCreditsTotal ?? 0) ?></span> crédits gagnés au total
+          </div>
         </div>
       </div>
     </div>
@@ -78,8 +80,7 @@
     data: {
       labels,
       datasets: [
-        { label: 'Crédits créés', data: <?= json_encode($chartCreditsCreated, JSON_UNESCAPED_SLASHES) ?>, tension: 0.25 },
-        { label: 'Crédits consommés', data: <?= json_encode($chartCreditsConsumed, JSON_UNESCAPED_SLASHES) ?>, tension: 0.25 }
+        { label: 'Crédits gagnés par la plateforme', data: <?= json_encode($chartPlatformCredits, JSON_UNESCAPED_SLASHES) ?>, tension: 0.25 }
       ]
     },
     options: {

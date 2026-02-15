@@ -81,4 +81,40 @@ final class StatsRepository
         }
         return $out;
     }
+
+    public function platformCreditsTotalSince(string $pivot): int
+    {
+        $pdo = PdoConnection::get();
+        $stmt = $pdo->prepare("
+            SELECT COALESCE(SUM(amount), 0)
+            FROM credits_transactions
+            WHERE created_at >= :pivot
+            AND user_id = 1
+            AND type = 'platform_fee'
+        ");
+        $stmt->execute(['pivot' => $pivot]);
+        return (int)$stmt->fetchColumn();
+    }
+
+    public function platformCreditsPerDaySince(string $pivot): array
+    {
+        $pdo = PdoConnection::get();
+        $stmt = $pdo->prepare("
+            SELECT DATE(created_at) AS day, COALESCE(SUM(amount), 0) AS gain
+            FROM credits_transactions
+            WHERE created_at >= :pivot
+            AND user_id = 1
+            AND type = 'platform_fee'
+            GROUP BY DATE(created_at)
+            ORDER BY day ASC
+        ");
+        $stmt->execute(['pivot' => $pivot]);
+
+        $rows = $stmt->fetchAll();
+        $out = [];
+        foreach ($rows as $r) {
+            $out[(string)$r['day']] = (int)$r['gain'];
+        }
+        return $out;
+    }
 }

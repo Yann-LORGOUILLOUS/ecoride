@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../Infrastructure/Repositories/StatsRepository.php';
 
 final class AdminStatsController extends BaseController
 {
-    private const PIVOT = '2026-02-19 00:00:00';
+    private const PIVOT = '2026-01-01 00:00:00';
 
     public function adminStats(): void
     {
@@ -43,6 +43,14 @@ final class AdminStatsController extends BaseController
             $creditsCreatedSeries[] = (int)(($creditsPerDay[$d]['created'] ?? 0));
             $creditsConsumedSeries[] = (int)(($creditsPerDay[$d]['consumed'] ?? 0));
         }
+        $platformCreditsTotal = $repo->platformCreditsTotalSince($pivot);
+        $platformCreditsByDay = $repo->platformCreditsPerDaySince($pivot);
+        $platformCreditsPerDayAvg = round($platformCreditsTotal / $daysElapsed, 2);
+
+        $chartPlatformCredits = [];
+        foreach ($labels as $day) {
+            $chartPlatformCredits[] = (int)($platformCreditsByDay[$day] ?? 0);
+        }
 
         $this->renderView('statistiques', [
             'pageTitle' => 'Statistiques',
@@ -56,6 +64,9 @@ final class AdminStatsController extends BaseController
             'creditsConsumedTotal' => $creditsConsumedTotal,
             'creditsCreatedPerDayAvg' => $creditsCreatedPerDayAvg,
             'creditsConsumedPerDayAvg' => $creditsConsumedPerDayAvg,
+            'platformCreditsTotal' => $platformCreditsTotal,
+            'platformCreditsPerDayAvg' => $platformCreditsPerDayAvg,
+            'chartPlatformCredits' => $chartPlatformCredits,
 
             'chartLabels' => $labels,
             'chartTrips' => $tripsSeries,

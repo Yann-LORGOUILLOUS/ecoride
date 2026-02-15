@@ -153,6 +153,7 @@ final class TripRepository
                 u.pseudo AS driver_pseudo,
                 u.email AS driver_email,
                 u.avatar_url AS driver_avatar_url,
+                u.preferences_note AS driver_preferences_note,
                 u.created_at AS driver_created_at,
 
                 (

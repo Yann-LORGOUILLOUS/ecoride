@@ -59,7 +59,7 @@ $csrfToken = $csrfToken ?? '';
               Vous n’avez pas de compte ? <a href="<?= BASE_URL ?>/inscription" class="link-light">Inscrivez-vous</a>
             </div>
             <div class="fst-italic text-white">
-              Mot de passe oublié ? <a href="#" class="link-light">Cliquez ici</a>
+              Mot de passe oublié ? <a href="<?= BASE_URL ?>/contact" class="link-light">Cliquez ici</a>
             </div>
           </div>
         </form>

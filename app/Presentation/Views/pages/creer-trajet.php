@@ -73,6 +73,7 @@
                             – <?= htmlspecialchars($vehicule['energy_type']) ?>
                         </option>
                     <?php endforeach; ?>
+                    <option value="__add_vehicle__">+ Ajouter un véhicule…</option>
                 </select>
             </div>
         </div>
@@ -159,13 +160,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     const vehiculeSelect = document.querySelector('select[name="vehicule_id"]');
     const seatsInput = document.getElementById('seats_available');
+    const baseUrl = <?= json_encode(BASE_URL) ?>;
 
     if (!vehiculeSelect || !seatsInput) return;
 
     const applyLimit = () => {
+        if (vehiculeSelect.value === '__add_vehicle__') {
+            const redirect = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `${baseUrl}/mes-vehicules?redirect=${redirect}`;
+            return;
+        }
         const selected = vehiculeSelect.options[vehiculeSelect.selectedIndex];
         const totalSeats = parseInt(selected.dataset.seats, 10);
-
         if (!Number.isNaN(totalSeats) && totalSeats > 1) {
             const maxPassengers = totalSeats - 1;
             seatsInput.max = String(maxPassengers);

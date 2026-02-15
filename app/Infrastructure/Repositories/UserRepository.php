@@ -167,7 +167,7 @@ final class UserRepository
         $pdo = PdoConnection::get();
 
         $stmt = $pdo->prepare('
-            SELECT id, pseudo, last_name, first_name, email, avatar_url, credits
+            SELECT id, pseudo, last_name, first_name, email, avatar_url, preferences_note, credits
             FROM users
             WHERE id = :id
             LIMIT 1
@@ -206,7 +206,8 @@ final class UserRepository
                 last_name = :last_name,
                 first_name = :first_name,
                 email = :email,
-                avatar_url = :avatar_url
+                avatar_url = :avatar_url,
+                preferences_note = :preferences_note
             WHERE id = :id
             LIMIT 1
         ');
@@ -217,6 +218,7 @@ final class UserRepository
             'first_name' => $data['first_name'],
             'email' => $data['email'],
             'avatar_url' => $data['avatar_url'],
+            'preferences_note' => $data['preferences_note'],
             'id' => $userId,
         ]);
     }

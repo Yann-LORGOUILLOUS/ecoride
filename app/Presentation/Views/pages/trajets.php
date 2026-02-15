@@ -158,6 +158,12 @@
             $driver = (string)($trip['driver_pseudo'] ?? '');
             $seats = (int)($trip['seats_available'] ?? 0);
             $credits = (int)($trip['price_credits'] ?? 0);
+            $avatarUrl = (string)($trip['driver_avatar_url'] ?? '');
+            $rating = isset($trip['driver_rating']) ? (float)$trip['driver_rating'] : 0.0;
+            $durationMinutes = (int)($trip['duration_minutes'] ?? 0);
+            $dh = intdiv(max($durationMinutes, 0), 60);
+            $dm = max($durationMinutes, 0) % 60;
+            $durationLabel = $durationMinutes > 0 ? sprintf('%dh%02d', $dh, $dm) : '—';
             $energy = (string)($trip['vehicle_energy'] ?? '');
             $eco = in_array(strtolower($energy), ['electric', 'hybrid', 'electrique', 'hybride'], true);
             $tripId = (int)($trip['id'] ?? 0);
@@ -184,7 +190,40 @@
               </div>
 
               <div class="bg-secondary bg-opacity-10 rounded-pill px-3 py-2 small text-center mb-2">
-                Conducteur : <span class="fw-semibold"><?= htmlspecialchars($driver) ?></span>
+                Durée : <span class="fw-semibold"><?= htmlspecialchars($durationLabel) ?></span>
+              </div>
+
+              <div class="bg-secondary bg-opacity-10 rounded-pill px-3 py-2 small mb-2">
+                <div class="d-flex align-items-center justify-content-between gap-2">
+
+                  <div class="d-flex align-items-center gap-2">
+                    <?php if ($avatarUrl !== ''): ?>
+                      <img
+                        src="<?= htmlspecialchars($avatarUrl) ?>"
+                        alt="Photo de <?= htmlspecialchars($driver) ?>"
+                        class="rounded-circle border"
+                        style="width:32px;height:32px;object-fit:cover;"
+                      >
+                    <?php else: ?>
+                      <div
+                        class="rounded-circle border bg-body d-flex align-items-center justify-content-center fw-semibold"
+                        style="width:32px;height:32px;"
+                        aria-hidden="true"
+                      >
+                        <?= htmlspecialchars(mb_strtoupper(mb_substr($driver, 0, 1))) ?>
+                      </div>
+                    <?php endif; ?>
+
+                    <div>
+                      Conducteur : <span class="fw-semibold"><?= htmlspecialchars($driver) ?></span>
+                    </div>
+                  </div>
+
+                  <div class="text-nowrap">
+                    Note : <span class="fw-semibold"><?= $rating > 0 ? number_format($rating, 1, ',', '') : '—' ?></span>
+                  </div>
+
+                </div>
               </div>
 
               <div class="bg-secondary bg-opacity-10 rounded-pill px-3 py-2 small text-center mb-2">

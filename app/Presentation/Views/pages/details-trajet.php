@@ -12,6 +12,7 @@ $price = (int)($trip['price_credits'] ?? 0);
 $seatsAvailable = (int)($trip['seats_available'] ?? 0);
 $driverPseudo = (string)($trip['driver_pseudo'] ?? '');
 $driverAvatar = (string)($trip['driver_avatar_url'] ?? '');
+$driverPreferencesNote = (string)($trip['driver_preferences_note'] ?? '');
 $driverCreatedAt = (string)($trip['driver_created_at'] ?? '');
 $driverTripsCount = (int)($trip['driver_trips_count'] ?? 0);
 $vehicleBrand = (string)($trip['vehicle_brand'] ?? '');
@@ -195,6 +196,18 @@ if ($rawBack !== '') {
             <span class="text-secondary">Fumeur :</span>
             <span class="fw-semibold ms-2"><?= htmlspecialchars($smokingLabel) ?></span>
           </div>
+
+          <?php if ($driverPreferencesNote !== ''): ?>
+            <div class="mt-3 border rounded-4 p-3 bg-body-tertiary">
+              <div class="fw-semibold mb-1">Autres préférences (générales)</div>
+              <div class="text-secondary"><?= nl2br(htmlspecialchars($driverPreferencesNote)) ?></div>
+            </div>
+          <?php endif; ?>
+
+          <div class="text-secondary small mt-2">
+            Les préférences finales sont celles précisées pour ce trajet.
+          </div>
+
         </div>
       </div>
     </div>
@@ -259,7 +272,7 @@ if ($rawBack !== '') {
         type="button"
         class="btn btn-ecoride-primary btn-lg rounded-pill fw-bold px-5"
         data-bs-toggle="modal"
-        data-bs-target="#confirmReservationModal"
+        data-bs-target="#reservationInfoModal"
         <?= $alreadyReserved ? 'disabled aria-disabled="true"' : '' ?>
       >
         RÉSERVER CE TRAJET
@@ -289,6 +302,28 @@ if ($rawBack !== '') {
       </a>
     </div>
 
+  </div>
+</div>
+
+<div class="modal fade" id="reservationInfoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Réservation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body pt-0">
+        Cette réservation va utiliser <span class="fw-bold"><?= (int)$price ?></span> crédits.
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+          Annuler
+        </button>
+        <button type="button" class="btn btn-ecoride-primary rounded-pill px-4" id="goToConfirmReservationBtn">
+          Continuer
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -362,6 +397,28 @@ if ($rawBack !== '') {
     </div>
   </div>
 </div>
+
+<script>
+  (function () {
+    const goBtn = document.getElementById('goToConfirmReservationBtn');
+    const infoEl = document.getElementById('reservationInfoModal');
+    const confirmEl = document.getElementById('confirmReservationModal');
+    if (!goBtn || !infoEl || !confirmEl) return;
+
+    const infoModal = bootstrap.Modal.getOrCreateInstance(infoEl);
+    const confirmModal = bootstrap.Modal.getOrCreateInstance(confirmEl);
+
+    goBtn.addEventListener('click', function () {
+      const onHidden = function () {
+        infoEl.removeEventListener('hidden.bs.modal', onHidden);
+        confirmModal.show();
+      };
+
+      infoEl.addEventListener('hidden.bs.modal', onHidden);
+      infoModal.hide();
+    });
+  })();
+</script>
 
 <?php if (($_GET['reserved'] ?? '') === '1'): ?>
 <script>

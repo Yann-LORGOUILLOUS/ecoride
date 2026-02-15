@@ -111,6 +111,7 @@ final class UserInfosController extends BaseController
         $firstName = trim((string)($_POST['first_name'] ?? ''));
         $email = trim((string)($_POST['email'] ?? ''));
         $avatarUrl = trim((string)($_POST['avatar_url'] ?? ''));
+        $preferencesNote = trim((string)($_POST['preferences_note'] ?? ''));
 
         if ($pseudo === '' || $lastName === '' || $firstName === '' || $email === '') {
             $this->flash('danger', 'Pseudo, nom, prénom et email sont obligatoires.');
@@ -130,12 +131,19 @@ final class UserInfosController extends BaseController
             exit;
         }
 
+        if (mb_strlen($preferencesNote) > 255) {
+            $this->flash('danger', 'Préférences générales : 255 caractères maximum.');
+            header('Location: ' . BASE_URL . '/mes-informations');
+            exit;
+        }
+
         $repo->updateProfile($userId, [
             'pseudo' => $pseudo,
             'last_name' => $lastName,
             'first_name' => $firstName,
             'email' => $email,
             'avatar_url' => ($avatarUrl === '') ? null : $avatarUrl,
+            'preferences_note' => ($preferencesNote === '') ? null : $preferencesNote,
         ]);
 
         $_SESSION['user']['pseudo'] = $pseudo;

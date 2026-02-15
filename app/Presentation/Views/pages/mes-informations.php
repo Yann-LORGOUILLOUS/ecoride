@@ -11,6 +11,7 @@ $lastName = (string)($user['last_name'] ?? '');
 $firstName = (string)($user['first_name'] ?? '');
 $email = (string)($user['email'] ?? '');
 $avatarUrl = (string)($user['avatar_url'] ?? '');
+$preferencesNote = (string)($user['preferences_note'] ?? '');
 ?>
 
 <div class="container-xxl px-3 py-4">
@@ -88,6 +89,24 @@ $avatarUrl = (string)($user['avatar_url'] ?? '');
           <div>
             <label class="form-label fw-semibold" for="avatar_url">Avatar (URL)</label>
             <input class="form-control rounded-4" id="avatar_url" name="avatar_url" value="<?= htmlspecialchars($avatarUrl) ?>" placeholder="https://...">
+          </div>
+
+          <div>
+            <label class="form-label fw-semibold" for="preferences_note">
+              Préférences générales (optionnel)
+            </label>
+            <textarea
+              class="form-control rounded-4"
+              id="preferences_note"
+              name="preferences_note"
+              rows="3"
+              maxlength="255"
+              placeholder="Ex : musique douce, plutôt silencieux, etc."
+            ><?= htmlspecialchars($preferencesNote) ?></textarea>
+
+            <div class="form-text">
+              Les préférences variables (fumeur/animaux/autres) sont précisées sur chaque trajet.
+            </div>
           </div>
 
           <div class="pt-2">

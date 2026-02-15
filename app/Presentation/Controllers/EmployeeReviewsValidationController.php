@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 require_once __DIR__ . '/../../Infrastructure/Repositories/ReviewRepository.php';
+use App\Infrastructure\Mail\Mailer;
 
 final class EmployeeReviewsValidationController extends BaseController
 {
@@ -82,7 +83,7 @@ final class EmployeeReviewsValidationController extends BaseController
                             . "— EcoRide\n";
 
                         $headers = "Content-Type: text/plain; charset=UTF-8\r\n";
-                        $mailSent = @mail($to, $subject, $body, $headers);
+                        $mailSent = Mailer::send($to, $subject, $body, $headers);
                     }
                 }
 

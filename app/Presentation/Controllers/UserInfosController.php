@@ -4,6 +4,7 @@ require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../../Infrastructure/Repositories/UserRepository.php';
 require_once __DIR__ . '/../../Infrastructure/Repositories/TripRepository.php';
 require_once __DIR__ . '/../../Infrastructure/Repositories/ReservationRepository.php';
+use App\Infrastructure\Mail\Mailer;
 
 final class UserInfosController extends BaseController
 {
@@ -335,7 +336,7 @@ final class UserInfosController extends BaseController
                 . "Vous pouvez consulter votre espace EcoRide.\n\n"
                 . "— EcoRide\n";
 
-            @mail($to, $subject, $body, "Content-Type: text/plain; charset=UTF-8\r\n");
+            Mailer::send($to, $subject, $body);
         }
     }
 
@@ -353,12 +354,17 @@ final class UserInfosController extends BaseController
                 continue;
             }
 
+            $link = Mailer::absoluteUrl('/mes-informations#myTripsPassenger');
+
             $body = "Bonjour,\n\n"
-                . "Le trajet \"$fromTo\" ($date) est terminé.\n"
-                . "Rendez-vous sur EcoRide pour confirmer que tout s’est bien passé et laisser un avis.\n\n"
+                . "Le trajet \"$fromTo\" ($date) est terminé.\n\n"
+                . "Action requise : rends-toi dans ton espace pour choisir :\n"
+                . "1) VALIDER (tout s’est bien passé)\n"
+                . "2) SIGNALER (problème pendant le trajet)\n\n"
+                . "Accès direct : $link\n\n"
                 . "— EcoRide\n";
 
-            @mail($to, $subject, $body, "Content-Type: text/plain; charset=UTF-8\r\n");
+            Mailer::send($to, $subject, $body);
         }
     }
 
@@ -396,7 +402,7 @@ final class UserInfosController extends BaseController
                 . "Une place vient d’être libérée.\n\n"
                 . "— EcoRide\n";
 
-            @mail($driverEmail, $subject, $body, "Content-Type: text/plain; charset=UTF-8\r\n");
+            Mailer::send($driverEmail, $subject, $body);
         }
 
         $this->flash('success', "Réservation annulée. $refund crédits remboursés. Le chauffeur a été notifié.");

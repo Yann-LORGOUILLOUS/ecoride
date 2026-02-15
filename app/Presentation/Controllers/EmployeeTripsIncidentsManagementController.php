@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../../Infrastructure/Repositories/IncidentRepository.php';
 require_once __DIR__ . '/../../Infrastructure/Repositories/UserRepository.php';
 require_once __DIR__ . '/../../Infrastructure/Repositories/TripRepository.php';
+use App\Infrastructure\Mail\Mailer;
 
 final class EmployeeTripsIncidentsManagementController extends BaseController
 {
@@ -73,7 +74,7 @@ final class EmployeeTripsIncidentsManagementController extends BaseController
                                 . "Un signalement vous concernant a été validé par la modération.\n"
                                 . "Merci de veiller au respect des règles EcoRide.\n\n"
                                 . "— EcoRide\n";
-                            @mail($to, $subject, $body, "Content-Type: text/plain; charset=UTF-8\r\n");
+                            Mailer::send($to, $subject, $body);
                         }
                     }
                 });
@@ -111,7 +112,7 @@ final class EmployeeTripsIncidentsManagementController extends BaseController
                                 . "Votre signalement a été refusé par la modération.\n\n"
                                 . "Raison :\n{$reason}\n\n"
                                 . "— EcoRide\n";
-                            @mail($to, $subject, $body, "Content-Type: text/plain; charset=UTF-8\r\n");
+                            Mailer::send($to, $subject, $body);
                         }
                     }
                 });
@@ -137,7 +138,7 @@ final class EmployeeTripsIncidentsManagementController extends BaseController
                 if (defined('MAIL_ADMIN') && filter_var(MAIL_ADMIN, FILTER_VALIDATE_EMAIL)) {
                     $subject = 'EcoRide - Signalement transféré à l’administrateur';
                     $body = "Bonjour,\n\nUn signalement a été transféré à l’administration.\nOID: {$oid}\n\n— EcoRide\n";
-                    @mail(MAIL_ADMIN, $subject, $body, "Content-Type: text/plain; charset=UTF-8\r\n");
+                    Mailer::send(MAIL_ADMIN, $subject, $body);
                 }
 
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'Signalement transféré à l’administrateur.'];

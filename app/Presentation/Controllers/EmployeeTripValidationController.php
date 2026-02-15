@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 require_once __DIR__ . '/../../Infrastructure/Repositories/TripRepository.php';
+use App\Infrastructure\Mail\Mailer;
 
 final class EmployeeTripValidationController extends BaseController
 {
@@ -116,7 +117,7 @@ final class EmployeeTripValidationController extends BaseController
                         . "— EcoRide\n";
 
                     $headers = "Content-Type: text/plain; charset=UTF-8\r\n";
-                    $mailSent = @mail($to, $subject, $body, $headers);
+                    $mailSent = Mailer::send($to, $subject, $body, $headers);
                 }
 
                 $_SESSION['flash'] = [

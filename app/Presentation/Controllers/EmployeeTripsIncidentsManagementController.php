@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
+use App\Infrastructure\Mail\Mailer;
+
 require_once __DIR__ . '/../../Infrastructure/Repositories/IncidentRepository.php';
 require_once __DIR__ . '/../../Infrastructure/Repositories/UserRepository.php';
 require_once __DIR__ . '/../../Infrastructure/Repositories/TripRepository.php';
-use App\Infrastructure\Mail\Mailer;
 
 final class EmployeeTripsIncidentsManagementController extends BaseController
 {

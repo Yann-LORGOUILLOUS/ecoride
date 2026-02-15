@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
+use App\Infrastructure\Mail\Mailer;
+
 require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../../Infrastructure/Repositories/UserRepository.php';
 require_once __DIR__ . '/../../Infrastructure/Repositories/TripRepository.php';
 require_once __DIR__ . '/../../Infrastructure/Repositories/ReservationRepository.php';
-use App\Infrastructure\Mail\Mailer;
 
 final class UserInfosController extends BaseController
 {

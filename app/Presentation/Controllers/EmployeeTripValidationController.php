@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-require_once __DIR__ . '/../../Infrastructure/Repositories/TripRepository.php';
 use App\Infrastructure\Mail\Mailer;
+
+require_once __DIR__ . '/../../Infrastructure/Repositories/TripRepository.php';
 
 final class EmployeeTripValidationController extends BaseController
 {

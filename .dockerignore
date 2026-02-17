@@ -1,0 +1,9 @@
+.git
+.gitignore
+.env
+.env.*
+*.md
+.idea/
+.vscode/
+.DS_Store
+storage/logs/*

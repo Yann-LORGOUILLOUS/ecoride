@@ -172,7 +172,7 @@ ALTER TABLE `contact_messages`
   ADD PRIMARY KEY (`id`);
 
 
--- Données initiales
+-- Données test
 INSERT INTO `users` (`id`, `pseudo`, `last_name`, `first_name`, `email`, `password_hash`, `avatar_url`, `preferences_note`, `role`, `credits`, `suspended`, `validated_reports_count`, `created_at`) VALUES
 (1, 'ecoride_platform', 'ECORIDE', 'PLATFORM', 'platform@ecoride.local', 'platform_internal_account', NULL, NULL, 'admin', 4, 0, 0, '2026-02-14 11:33:50'),
 (4, 'amina', 'EL AMRANI', 'Amina', 'amina@ecoride.local', 'Password123!', 'https://numero.com/wp-content/uploads/2022/10/avatar-film2.jpg', NULL, 'user', 14, 0, 1, '2026-02-01 17:36:13'),

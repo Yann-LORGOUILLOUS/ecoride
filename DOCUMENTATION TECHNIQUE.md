@@ -58,3 +58,16 @@ L’ensemble de cette configuration vise à garantir :
 
 3\. Déploiement de l'application
 
+L’application EcoRide est déployée sur la plateforme cloud Railway à l’aide d’un conteneur Docker personnalisé. Ce choix permet de maîtriser précisément l’environnement d’exécution et d’assurer une cohérence entre le développement local et la production.
+
+Un Dockerfile basé sur l’image officielle php:8.2-cli est utilisé. Lors du build, les extensions nécessaires au projet sont installées, notamment pdo, pdo_mysql, mysqli, zip ainsi que l’extension mongodb, compilée avec le support OpenSSL afin de garantir la compatibilité TLS requise par MongoDB Atlas. Les dépendances PHP sont installées via Composer en mode production (--no-dev --optimize-autoloader) afin de limiter la surface d’attaque et d’optimiser les performances.
+
+L’application est exposée via le serveur PHP intégré pointant vers le dossier public, conformément à l’architecture Front Controller mise en place. Cette configuration permet de centraliser le point d’entrée et de contrôler l’ensemble du routage applicatif.
+
+Les variables sensibles, notamment MONGODB_URI et MONGODB_DB, sont injectées via le système de variables d’environnement Railway et ne sont jamais versionnées dans le dépôt Git. La base MongoDB est hébergée sur MongoDB Atlas et sécurisée par l’utilisation du protocole mongodb+srv (TLS activé) ainsi que par un utilisateur applicatif dédié disposant uniquement des droits readWrite sur la base ecoride.
+
+Cette approche garantit :
+* une isolation claire entre l’infrastructure et le code applicatif,
+* une configuration sécurisée des accès aux bases de données,
+* une reproductibilité du déploiement,
+* une conformité aux bonnes pratiques professionnelles en environnement cloud.

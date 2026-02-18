@@ -1,33 +1,35 @@
 FROM php:8.2-cli
 
-# Install extensions
+# System deps required for MongoDB TLS + zip + CA certs
 RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    openssl \
+    libssl-dev \
+    pkg-config \
+    libsasl2-dev \
     libzip-dev \
     zip \
-    && docker-php-ext-install pdo pdo_mysql mysqli zip
+  && docker-php-ext-install pdo pdo_mysql mysqli zip \
+  && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# MongoDB PHP extension (compiled with SSL thanks to libssl-dev)
+RUN pecl install mongodb \
+  && docker-php-ext-enable mongodb
 
-# Set working directory
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html
 
-# Copy composer files first (better caching)
-COPY composer.json composer.lock* ./
+COPY composer.json composer.lock ./
 
-# Install dependencies
-RUN pecl install mongodb \
-    &&  echo "extension=mongodb.so" > $PHP_INI_DIR/conf.d/mongo.ini
-RUN composer update
+# Install PHP deps (DO NOT composer update in a container build)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Copy application files
+# Copy app
 COPY . .
 
-# Set permissions
-RUN chmod -R 755 storage
+RUN [ -d storage ] && chmod -R 755 storage || true
 
 EXPOSE 80
-
-# Use PHP built-in server (simpler, works well on Railway)
-CMD php -S 0.0.0.0:${PORT:-80} -t public
+CMD ["sh", "-lc", "php -S 0.0.0.0:${PORT:-80} -t public"]

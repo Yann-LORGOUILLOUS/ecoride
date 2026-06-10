@@ -67,7 +67,7 @@ final class EmployeeTripValidationController extends BaseController
                         'type' => 'success',
                         'message' => 'Trajet validé.',
                     ];
-                    header('Location: ' . BASE_URL . '/dashboard-employe-trajets');
+                    header('Location: ' . BASE_URL . '/liste-trajets-a-valider');
                     exit;
                 } catch (InvalidArgumentException $e) {
                     $_SESSION['flash'] = [
